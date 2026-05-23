@@ -1,0 +1,106 @@
+.dashboard-page {
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-16);
+}
+
+.dashboard-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-10);
+}
+
+@media (min-width: 768px) {
+  .dashboard-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.dashboard-stats {
+  margin-bottom: var(--space-12);
+}
+
+.stat-card {
+  padding: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.stat-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+}
+
+.stat-card-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-card-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-card-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-family: var(--font-serif);
+}
+
+.listings-table-container {
+  overflow-x: auto;
+}
+
+.listings-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.listings-table th,
+.listings-table td {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.listings-table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  background-color: var(--bg-secondary);
+}
+
+.table-artwork-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.table-artwork-img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.status-indicator {
+  font-weight: 500;
+}
+
+.hover-underline:hover {
+  text-decoration: underline;
+}

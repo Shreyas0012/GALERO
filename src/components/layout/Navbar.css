@@ -1,0 +1,89 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-overlay);
+  background-color: rgba(5, 5, 10, 0.8);
+  /* Deep navy glass */
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--space-4) 0;
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-left,
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.navbar-logo {
+  font-size: 1.25rem;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+}
+
+.navbar-links {
+  display: none;
+  gap: var(--space-8);
+}
+
+.navbar-links a {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: color var(--transition-fast), text-shadow var(--transition-fast);
+}
+
+.navbar-links a:hover {
+  color: var(--accent-light);
+  text-shadow: 0 0 8px rgba(34, 211, 238, 0.4);
+}
+
+.menu-btn {
+  display: block;
+  color: var(--text-primary);
+}
+
+.icon-btn {
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.icon-btn:hover {
+  color: var(--accent-light);
+  background-color: rgba(6, 182, 212, 0.1);
+  border-color: rgba(6, 182, 212, 0.2);
+}
+
+@media (min-width: 768px) {
+  .menu-btn {
+    display: none;
+  }
+
+  .navbar-links {
+    display: flex;
+  }
+}
+
+/* Connect button: black text on cyan background */
+.navbar .btn-primary {
+  color: #000000;
+  font-weight: 600;
+}

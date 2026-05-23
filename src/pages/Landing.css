@@ -1,0 +1,144 @@
+.landing-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  padding-bottom: var(--space-16);
+}
+
+.hero {
+  padding-top: var(--space-10);
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+}
+
+.hero-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-10);
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .hero-container {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-16);
+  }
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.hero-title {
+  color: var(--text-primary);
+  margin-bottom: 0;
+}
+
+.hero-subtitle {
+  font-size: 1.125rem;
+  max-width: 500px;
+}
+
+.hero-visual {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-elevation);
+}
+
+.hero-image {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-visual-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-6);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.hero-visual-caption .btn-outline {
+  border-color: rgba(255, 255, 255, 0.929);
+  color: #fff;
+}
+
+.hero-visual-caption .btn-outline:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+.caption-title {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-1);
+}
+
+.caption-artist {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: var(--space-8);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: var(--space-4);
+}
+
+.trust-section {
+  background-color: var(--bg-secondary);
+  padding: var(--space-16) 0;
+}
+
+.trust-container {
+  display: flex;
+  justify-content: center;
+}
+
+.trust-content {
+  max-width: 600px;
+  text-align: center;
+}
+
+.trust-content h2 {
+  margin-bottom: var(--space-6);
+}
+
+.trust-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  text-align: left;
+}
+
+.trust-list li {
+  padding-left: var(--space-6);
+  position: relative;
+  font-weight: 500;
+}
+
+.trust-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--accent-color);
+}
+
+.hero .btn-primary {
+  color: #000000;
+  font-weight: 600;
+}

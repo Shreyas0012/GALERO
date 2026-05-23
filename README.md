@@ -1,73 +1,16 @@
-<div align="center">
+# React + Vite
 
-# 🎨 ARTORA  
-### Decentralized Art & NFT Auction Platform  
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-**Mint • Auction • Collect • Own**
+Currently, two official plugins are available:
 
-</div>
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
----
+## React Compiler
 
-## 🟢 Project Status
-🛠️ **Under Development**  
-📌 Planning & System Design Phase
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
----
+## Expanding the ESLint configuration
 
-## 🌈 Overview
-
-**ARTORA** is a decentralized web platform that enables artists to mint digital artwork as NFTs and auction them directly to collectors using blockchain technology.
-
-It ensures:
-- 🔐 Secure ownership  
-- 📜 Transparent auctions  
-- 💸 Fair artist royalties  
-
----
-
-## 🎯 Problem Statement
-
-Traditional NFT platforms often involve:
-- Centralized control  
-- High platform fees  
-- Limited transparency  
-- Weak ownership guarantees  
-
----
-
-## 💡 Proposed Solution
-
-ARTORA solves these issues by using:
-- Smart contracts for auction logic  
-- Blockchain for immutable ownership  
-- IPFS for decentralized storage  
-
----
-
-## ✨ Planned Features
-
-- 🎨 NFT minting with metadata  
-- 🔨 Time-based decentralized auctions  
-- 💰 Live bidding mechanism  
-- 👛 Wallet-based login (MetaMask)  
-- 📜 Immutable transaction history  
-- 💸 Artist royalties on resale  
-
----
-
-## 🛠️ Technology Stack
-
-| Layer | Technologies |
-|-----|-------------|
-| 🌐 Frontend | React, HTML, CSS, JavaScript |
-| ⛓️ Blockchain | Ethereum / Polygon |
-| 🧾 Smart Contracts | Solidity |
-| 🎭 NFT Standards | ERC-721, ERC-1155 |
-| 📦 Storage | IPFS |
-| 👛 Wallet | MetaMask |
-
----
-
-## 🧠 System Architecture
-
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.

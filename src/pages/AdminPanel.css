@@ -1,0 +1,7 @@
+.mt-12 {
+  margin-top: var(--space-12);
+}
+
+.text-error {
+  color: var(--error);
+}
