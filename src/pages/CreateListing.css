@@ -1,7 +1,12 @@
 .create-listing-page {
-  padding-top: var(--space-10);
+  padding-top: 120px;
   padding-bottom: var(--space-16);
   min-height: calc(100vh - 80px);
+}
+
+.onboard-header {
+  margin-top: 15vh;
+  margin-bottom: var(--space-10);
 }
 
 .upload-dropzone {

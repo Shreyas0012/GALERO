@@ -1,18 +1,25 @@
 .artwork-detail-page {
-  padding-top: var(--space-8);
-  padding-bottom: var(--space-16);
+  padding-top: 80px; /* Safe space to clear the navbar on mobile */
+  padding-bottom: var(--space-10);
 }
 
 .artwork-detail-layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-10);
+  gap: var(--space-8);
+  margin-top: 3vh; /* Compact top margin on mobile */
 }
 
 @media (min-width: 1024px) {
+  .artwork-detail-page {
+    padding-top: 120px;
+    padding-bottom: var(--space-16);
+  }
+
   .artwork-detail-layout {
     grid-template-columns: 1fr 400px;
     gap: var(--space-12);
+    margin-top: 15vh; /* Cinematic breathing room on desktop */
   }
 }
 
@@ -90,12 +97,17 @@
 
 /* Right Column */
 .artwork-detail-info {
-  position: sticky;
-  top: 100px; /* Assuming navbar height + padding */
-  align-self: start;
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
+}
+
+@media (min-width: 1024px) {
+  .artwork-detail-info {
+    position: sticky;
+    top: 100px; /* Assuming navbar height + padding */
+    align-self: start;
+  }
 }
 
 .artwork-header {
@@ -116,7 +128,10 @@
 
 .artwork-title {
   margin: 0;
-  font-size: 2.5rem;
+  font-family: 'Playfair Display', Didot, 'Bodoni MT', 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.75rem;
   line-height: 1.1;
 }
 
@@ -189,6 +204,8 @@
 .metadata-value {
   font-weight: 500;
   font-size: 0.875rem;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 /* Purchase Panel */

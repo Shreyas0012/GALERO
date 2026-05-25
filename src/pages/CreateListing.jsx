@@ -52,7 +52,7 @@ export default function CreateListing() {
   return (
     <div className="create-listing-page container">
       <div className="onboard-header text-center">
-        <h1 className="font-display">Create New Listing</h1>
+        <h3 className="font-display">Create New Listing</h3>
         <p className="text-muted">Register and list a new artwork on the marketplace.</p>
       </div>
 

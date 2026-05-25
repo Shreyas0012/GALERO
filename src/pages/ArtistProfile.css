@@ -1,6 +1,6 @@
 .artist-profile-page {
-  padding-top: var(--space-10);
-  padding-bottom: var(--space-16);
+  padding-top: 80px; /* Safe space to clear the navbar on mobile */
+  padding-bottom: var(--space-10);
 }
 
 .artist-header {
@@ -9,15 +9,23 @@
   align-items: center;
   text-align: center;
   gap: var(--space-6);
-  margin-bottom: var(--space-16);
+  margin-top: 3vh; /* Compact top margin on mobile */
+  margin-bottom: var(--space-8);
 }
 
 @media (min-width: 768px) {
+  .artist-profile-page {
+    padding-top: 120px;
+    padding-bottom: var(--space-16);
+  }
+
   .artist-header {
     flex-direction: row;
     align-items: flex-start;
     text-align: left;
     gap: var(--space-10);
+    margin-top: 15vh; /* Cinematic top margin on desktop */
+    margin-bottom: var(--space-16);
   }
 }
 
@@ -45,14 +53,16 @@
 
 .artist-meta {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  gap: var(--space-4);
+  gap: var(--space-2) var(--space-4);
   font-size: 0.875rem;
 }
 
 @media (min-width: 768px) {
   .artist-meta {
     justify-content: flex-start;
+    gap: var(--space-4);
   }
 }
 
@@ -63,8 +73,9 @@
 
 .artist-stats {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  gap: var(--space-8);
+  gap: var(--space-4) var(--space-8);
   margin-top: var(--space-2);
   padding-top: var(--space-4);
   border-top: 1px solid var(--border-color);
@@ -73,6 +84,7 @@
 @media (min-width: 768px) {
   .artist-stats {
     justify-content: flex-start;
+    gap: var(--space-8);
   }
 }
 

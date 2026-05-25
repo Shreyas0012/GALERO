@@ -1,12 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400;1,700&family=Cause:wght@100..900&family=Chelsea+Market&family=Marhey:wght@300..700&family=Saira+Stencil+One&family=Stack+Sans+Notch:wght@200..700&family=Uncial+Antiqua&display=swap');
+
 .dashboard-page {
-  padding-top: var(--space-8);
+  padding-top: 120px;
   padding-bottom: var(--space-16);
+  min-height: 100vh;
+}
+
+.dashboard-listings .section-header .font-display {
+  font-family: 'Uncial Antiqua', cursive;
 }
 
 .dashboard-header {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  margin-top: 15vh;
   margin-bottom: var(--space-10);
 }
 

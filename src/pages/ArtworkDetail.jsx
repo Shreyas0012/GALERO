@@ -1,21 +1,58 @@
 import { useParams, Link } from 'react-router-dom';
 import { ShieldCheck, Clock, Share2, Heart } from 'lucide-react';
-import { MOCK_DATA } from '../data/mock';
+import { artworksApi, normalizeArtwork } from '../data/api';
+import { useState, useEffect } from 'react';
+import { useCart } from '../context/CartContext';
 import './ArtworkDetail.css';
 
 export default function ArtworkDetail() {
   const { id } = useParams();
+  const { cart, addToCart, openCart } = useCart();
+  
+  const [artwork, setArtwork] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // For demo, just find by ID or default to first
-  const artwork = MOCK_DATA.artworks.find(a => a.id === id) || MOCK_DATA.artworks[0];
-  const artist = MOCK_DATA.artists.find(a => a.id === artwork.artistId);
+  useEffect(() => {
+    setLoading(true);
+    artworksApi.getById(id)
+      .then(raw => {
+        setArtwork(normalizeArtwork(raw));
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, [id]);
 
-  if (!artwork) {
-    return <div className="container" style={{ paddingTop: '4rem' }}>Artwork not found</div>;
+  if (loading) {
+    return <div className="container text-center text-white/50" style={{ paddingTop: '15vh' }}>Loading Archive...</div>;
   }
 
+  if (!artwork) {
+    return <div className="container text-center text-red-500/50" style={{ paddingTop: '15vh' }}>Artwork not found in the archive.</div>;
+  }
+
+  const artist = artwork.artist || { 
+    id: 'unknown', 
+    name: 'Unknown Artist', 
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200',
+    isVerified: false,
+    location: 'Unknown'
+  };
+
+  const isInCart = artwork && cart.some(item => item.id === artwork.id);
+
+  const handleAcquire = () => {
+    if (isInCart) {
+      openCart();
+    } else {
+      addToCart({ ...artwork, itemType: 'painting' });
+    }
+  };
+
   return (
-    <div className="artwork-detail-page container">
+    <div className="artwork-detail-page container" style={{ paddingTop: '15vh' }}>
       <div className="artwork-detail-layout">
 
         {/* Left Column: Visuals & Provenance */}
@@ -55,7 +92,7 @@ export default function ArtworkDetail() {
             </div>
           </div>
 
-          <h1 className="artwork-title font-display">{artwork.title}</h1>
+          <h5 className="artwork-title font-display">{artwork.title}</h5>
 
           <Link to={`/artist/${artist.id}`} className="artist-info-card">
             <img src={artist.avatar} alt={artist.name} className="artist-avatar" />
@@ -95,7 +132,12 @@ export default function ArtworkDetail() {
               <span className="price-value">{artwork.price}</span>
             </div>
             {artwork.status === 'active' ? (
-              <button className="btn btn-primary purchase-btn">Acquire Artwork</button>
+              <button 
+                className={`btn purchase-btn ${isInCart ? 'btn-outline border-white/20' : 'btn-primary'}`}
+                onClick={handleAcquire}
+              >
+                {isInCart ? 'Already in Cart' : 'Acquire Artwork'}
+              </button>
             ) : (
               <button className="btn btn-outline purchase-btn" disabled>Sold</button>
             )}

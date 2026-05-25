@@ -7,8 +7,8 @@ export default function CollectorDashboard() {
   const savedArtworks = [MOCK_DATA.artworks[0], MOCK_DATA.artworks[1]];
   
   return (
-    <div className="dashboard-page container">
-      <header className="dashboard-header">
+    <div className="admin-page container">
+      <header className="admin-header">
         <div>
           <h1 className="font-display">Collector Vault</h1>
           <p className="text-muted">Manage your collected works, provenances, and saved items.</p>

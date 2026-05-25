@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import Lenis from 'lenis';
 import FloatingActions from './components/layout/FloatingActions';
 import AppLayout from './components/layout/AppLayout';
+import CartDrawer from './components/layout/CartDrawer';
 import Landing from './pages/Landing';
 import Explore from './pages/Explore';
 import ArtworkDetail from './pages/ArtworkDetail';
@@ -11,6 +12,7 @@ import ArtistProfile from './pages/ArtistProfile';
 import ArtistDashboard from './pages/ArtistDashboard';
 import Onboard from './pages/Onboard';
 import CreateListing from './pages/CreateListing';
+import Collections from './pages/Collections';
 import LoadingScreen from './components/layout/LoadingScreen';
 
 import AdminPanel from './pages/AdminPanel';
@@ -20,7 +22,6 @@ import Register from './pages/Register';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 
 // Placeholder components for unbuilt pages
-const Collections = () => <div className="container" style={{padding: '4rem 0'}}>Curated Collections Page</div>;
 const CollectorDashboard = () => <div className="container" style={{padding: '4rem 0'}}>Collector Dashboard</div>;
 
 function ScrollToTop() {
@@ -50,6 +51,13 @@ function App() {
   }, []);
 
   useEffect(() => {
+    // Only initialize Lenis on desktop / non-touch screens to avoid mobile scrolling lockups
+    const isMobileDevice = window.innerWidth < 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isMobileDevice) {
+      window.lenis = null;
+      return;
+    }
+
     const lenis = new Lenis({
       duration: 0.6,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -63,15 +71,18 @@ function App() {
     
     window.lenis = lenis;
 
+    let rafId;
     function raf(time) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
 
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
     return () => {
       lenis.destroy();
+      cancelAnimationFrame(rafId);
+      window.lenis = null;
     };
   }, []);
 
@@ -80,6 +91,7 @@ function App() {
       <LoadingScreen isLoading={isLoading} />
       <ScrollToTop />
       <FloatingActions />
+      <CartDrawer />
       <Routes>
       <Route path="/" element={<AppLayout />}>
         <Route index element={<Landing />} />

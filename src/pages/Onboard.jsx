@@ -45,7 +45,7 @@ export default function Onboard() {
   return (
     <div className="onboard-page container">
       <div className="onboard-header text-center">
-        <h1 className="font-display">Apply as an Artist</h1>
+        <h3 className="font-display">Apply as an Artist</h3>
         <p className="text-muted">Join a curated marketplace of world-class creators.</p>
       </div>
 
