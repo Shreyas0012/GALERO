@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="container footer-container">
         <div className="footer-brand text-center md:col-span-3 mb-12">
           <Link to="/" className="font-display text-4xl tracking-widest uppercase mb-4 inline-block text-white">
-            ANTIGRAVITY
+            Galero
           </Link>
           <p className="footer-tagline text-muted max-w-md mx-auto">
             A curated marketplace for provenance-backed digital and physical art.
@@ -38,7 +38,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="container footer-bottom">
-        <p>&copy; {new Date().getFullYear()} ANTIGRAVITY. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Galero. All rights reserved.</p>
         <div className="footer-legal">
           <Link to="#">Terms</Link>
           <Link to="#">Privacy</Link>

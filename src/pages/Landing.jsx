@@ -32,7 +32,7 @@ export default function Landing() {
         transition={{ duration: 2, delay: 1.5 }}
       >
         <div className="text-[10px] uppercase tracking-[0.3em] text-white/50 mb-1 text-center">Project</div>
-        <div className="text-xs uppercase tracking-widest text-white text-center">Antigravity</div>
+        <div className="text-xs uppercase tracking-widest text-white text-center">Galero</div>
       </motion.div>
 
       <motion.div
