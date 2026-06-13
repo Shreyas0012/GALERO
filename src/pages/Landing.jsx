@@ -52,7 +52,7 @@ export default function Landing() {
         transition={{ duration: 2, delay: 2 }}
       >
         <Link to="/explore" className="group flex items-center gap-4 cursor-pointer">
-          <div className="text-xs uppercase tracking-[0.2em] text-white/50 group-hover:text-white transition-colors duration-700">Enter Experience</div>
+          <div className="text-xs uppercase tracking-[0.2em] text-white/50 group-hover:text-white transition-colors duration-700">Paintings</div>
           <div className="w-8 h-[1px] bg-white/30 group-hover:w-16 group-hover:bg-white transition-all duration-700"></div>
         </Link>
       </motion.div>
