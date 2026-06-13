@@ -140,7 +140,7 @@ export function normalizeArtwork(artwork) {
     artist: foundArtist ? normalizeArtist(foundArtist) : null,
     medium: artwork.medium || '',
     editionType: artwork.category || artwork.editionType || 'Original',
-    price: artwork.price ? (artwork.price.includes('USD') || artwork.price.includes('ETH') ? artwork.price : `${artwork.price} USD`) : 'Price on Request',
+    price: artwork.price ? (String(artwork.price).includes('USD') || String(artwork.price).includes('ETH') ? String(artwork.price) : `${artwork.price} USD`) : 'Price on Request',
     status: artwork.isAvailable !== undefined ? (artwork.isAvailable ? 'active' : 'sold') : (artwork.status || 'active'),
     orientation: artwork.orientation || 'portrait',
     images: artwork.imageUrl ? [artwork.imageUrl] : (artwork.images && artwork.images.length > 0 ? artwork.images : ['https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&q=80&w=800']),

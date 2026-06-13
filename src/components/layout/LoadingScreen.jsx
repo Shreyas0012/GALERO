@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLottie } from 'lottie-react';
-import animationData from '../../assets/octahedron.json';
+import animationData from '../../assets/9fbeb5fe-1178-11ee-be3f-8ff4cb4e23c2.json';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const LoadingScreen = ({ isLoading }) => {

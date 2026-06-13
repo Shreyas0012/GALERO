@@ -1,0 +1,394 @@
+/* Register page styling: Compact card floating on the left with 3D model */
+
+.register-page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;
+  background-color: #020305;
+}
+
+.register-card-wrapper {
+  width: 100%;
+  min-height: 100vh; /* Push footer below first view */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 1.5rem;
+  z-index: 10;
+}
+
+@media (min-width: 768px) {
+  .register-card-wrapper {
+    justify-content: flex-end; /* Shift card to the right on desktop */
+    padding-right: 8%;
+    padding-left: 0;
+  }
+}
+
+/* Background Ambient Glows */
+.register-glow-1 {
+  position: fixed;
+  top: 15%;
+  left: 10%;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, rgba(99, 102, 241, 0) 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Compact Glassmorphic Card */
+.register-glass-card {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 460px; /* Compact width since there's no 3D side */
+  background: rgba(14, 16, 23, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  box-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.7),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  display: block;
+}
+
+/* Compact Form Column */
+.register-form-side {
+  padding: 1.75rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: transparent;
+}
+
+@media (min-width: 768px) {
+  .register-form-side {
+    padding: 2.5rem 2.5rem;
+  }
+}
+
+/* Right 3D Column */
+.register-video-side {
+  position: relative;
+  display: none; /* Hidden on mobile */
+  overflow: hidden;
+  background: #030408;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+@media (min-width: 768px) {
+  .register-video-side {
+    display: flex; /* Centered flex layout for 3D model canvas */
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.register-canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  outline: none;
+}
+
+/* Compact Logo */
+.register-logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+}
+
+.register-logo-dot {
+  width: 9px;
+  height: 9px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #ef4444;
+}
+
+.register-logo-text {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+/* Compact Headers */
+.register-form-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin-bottom: 0.15rem;
+}
+
+.register-form-subtitle {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+/* Error Banner */
+.register-error-banner {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  margin-bottom: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Compact Inputs & Labels */
+.register-input-group {
+  margin-bottom: 0.75rem;
+}
+
+.register-input-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-bottom: 0.25rem;
+}
+
+.register-input {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.85rem;
+  background: rgba(8, 9, 12, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #ffffff;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.register-input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.register-input:focus {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(8, 9, 12, 0.8);
+}
+
+.register-select {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.85rem;
+  background: rgba(8, 9, 12, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #ffffff;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.register-select-wrapper {
+  position: relative;
+}
+
+.register-select-wrapper::after {
+  content: '▼';
+  font-size: 0.5rem;
+  color: rgba(255, 255, 255, 0.3);
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.register-select:focus {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.register-select option {
+  background-color: #0e1017;
+  color: #ffffff;
+}
+
+/* Checkbox Rules */
+.register-checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+  cursor: pointer;
+}
+
+.register-checkbox-container input {
+  width: 13px;
+  height: 13px;
+  accent-color: #ffffff;
+  cursor: pointer;
+}
+
+.register-checkbox-text {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.register-checkbox-text strong {
+  color: #ffffff;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Launch Account Button */
+.register-btn-submit {
+  width: 100%;
+  padding: 0.65rem;
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.register-btn-submit:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-1px);
+}
+
+.register-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Divider separator */
+.register-divider {
+  display: flex;
+  align-items: center;
+  margin: 0.85rem 0;
+  color: rgba(255, 255, 255, 0.15);
+  font-size: 0.6rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.register-divider::before,
+.register-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.register-divider span {
+  padding: 0 0.4rem;
+}
+
+/* Social Buttons Row */
+.register-social-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+}
+
+.register-social-btn {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.75rem;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.register-social-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Redirection Footer text */
+.register-footer-text {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.register-footer-link {
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.register-footer-link:hover {
+  color: #f8fafc;
+}
+
+.register-bg-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.register-starfield {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.register-star {
+  position: absolute;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 5px #ffffff;
+  opacity: 0;
+  animation: registerStarPulse infinite ease-in-out;
+}
+
+@keyframes registerStarPulse {
+  0%, 100% {
+    opacity: 0.1;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.3);
+  }
+}

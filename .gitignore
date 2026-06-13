@@ -31,3 +31,16 @@ dist-ssr
 .env.local
 
 .vercel
+
+# Backend / Maven
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+backend/.apt_generated
+backend/.classpath
+backend/.factorypath
+backend/.project
+backend/.settings
+backend/.springBeans
+backend/.sts4-cache
+backend/build/
+backend/uploads/

@@ -93,37 +93,39 @@ function App() {
       <FloatingActions />
       <CartDrawer />
       <Routes>
-      <Route path="/" element={<AppLayout />}>
-        <Route index element={<Landing />} />
-        <Route path="explore" element={<Explore />} />
-        <Route path="artwork/:id" element={<ArtworkDetail />} />
-        <Route path="artist/:id" element={<ArtistProfile />} />
-        <Route path="collections" element={<Collections />} />
-        
+        {/* Full-screen auth pages (without global Navbar/Footer) */}
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
 
-        {/* Protected Routes */}
-        <Route path="dashboard/artist" element={
-          <ProtectedRoute allowedRoles={['ARTIST', 'ADMIN']}>
-            <ArtistDashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="dashboard/collector" element={
-          <ProtectedRoute allowedRoles={['BUYER', 'ADMIN']}>
-            <CollectorDashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="admin" element={
-          <ProtectedRoute allowedRoles={['ADMIN']}>
-            <AdminPanel />
-          </ProtectedRoute>
-        } />
-        
-        <Route path="onboard" element={<Onboard />} />
-        <Route path="create-listing" element={<CreateListing />} />
-      </Route>
-    </Routes>
+        {/* Main Application Layout pages */}
+        <Route path="/" element={<AppLayout />}>
+          <Route index element={<Landing />} />
+          <Route path="explore" element={<Explore />} />
+          <Route path="artwork/:id" element={<ArtworkDetail />} />
+          <Route path="artist/:id" element={<ArtistProfile />} />
+          <Route path="collections" element={<Collections />} />
+
+          {/* Protected Routes */}
+          <Route path="dashboard/artist" element={
+            <ProtectedRoute allowedRoles={['ARTIST', 'ADMIN']}>
+              <ArtistDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="dashboard/collector" element={
+            <ProtectedRoute allowedRoles={['BUYER', 'ADMIN']}>
+              <CollectorDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="admin" element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminPanel />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="onboard" element={<Onboard />} />
+          <Route path="create-listing" element={<CreateListing />} />
+        </Route>
+      </Routes>
     </>
   );
 }
