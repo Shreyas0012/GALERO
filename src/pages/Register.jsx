@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Loader, ShieldAlert } from 'lucide-react';
+import { Loader, ShieldAlert, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../data/api';
@@ -103,6 +103,12 @@ export default function Register() {
         >
           {/* Form Column */}
           <div className="register-form-side">
+            {/* Back to main page */}
+            <Link to="/" className="register-back-link">
+              <ArrowLeft size={14} />
+              <span>Back to home</span>
+            </Link>
+
             {/* Logo */}
             <div className="register-logo-container">
               <div className="register-logo-dot" />
