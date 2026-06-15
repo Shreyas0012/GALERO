@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, Search, User, ArrowLeft, ArrowRight, LogOut, ShoppingBag } from 'lucide-react';
+import { Menu, X, Search, User, ArrowLeft, ArrowRight, LogOut, ShoppingBag, Compass, Layers, Palette, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
@@ -54,12 +54,24 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Center: desktop nav links */}
+          {/* Center: desktop nav links (Clean text list matching Hubtown) */}
           <nav className="navbar-links">
-            <Link to="/explore">Explore</Link>
-            <Link to="/collections">Collections</Link>
-            {user?.role === 'ARTIST' && <Link to="/dashboard/artist">Artist Dashboard</Link>}
-            {user?.role === 'ADMIN' && <Link to="/admin" className="text-accent">Admin Panel</Link>}
+            <Link to="/explore" className="nav-icon-link">
+              <span className="nav-text-label">Explore</span>
+            </Link>
+            <Link to="/collections" className="nav-icon-link">
+              <span className="nav-text-label">Collections</span>
+            </Link>
+            {user?.role === 'ARTIST' && (
+              <Link to="/dashboard/artist" className="nav-icon-link">
+                <span className="nav-text-label">Artist Dashboard</span>
+              </Link>
+            )}
+            {user?.role === 'ADMIN' && (
+              <Link to="/admin" className="nav-icon-link text-accent">
+                <span className="nav-text-label">Admin Panel</span>
+              </Link>
+            )}
           </nav>
 
           {/* Right: search + cart + user (desktop) / user icon (mobile) */}
@@ -78,27 +90,33 @@ export default function Navbar() {
               )}
             </button>
 
-            {/* Desktop: full user info */}
+            {/* Desktop: user profile and logout icons */}
             <div className="navbar-user-desktop">
               {user ? (
-                <div className="flex items-center gap-3">
-                  <span className="text-xs opacity-70 flex items-center gap-1.5">
-                    <User size={14} />
-                    <span className="hidden-name">{user.name}</span>
-                  </span>
+                <div className="flex flex-col items-center gap-4">
+                  <Link
+                    to={user.role === 'ARTIST' ? '/dashboard/artist' : '/'}
+                    className="icon-btn"
+                    title={`Profile: ${user.name}`}
+                  >
+                    <User size={18} />
+                  </Link>
                   <button
                     onClick={logout}
-                    className="text-[10px] uppercase tracking-[0.2em] text-white/50 hover:text-white transition-colors duration-500 flex items-center gap-1"
+                    className="icon-btn"
+                    title="Logout"
+                    aria-label="Logout"
                   >
-                    <LogOut size={13} /> Logout
+                    <LogOut size={18} />
                   </button>
                 </div>
               ) : (
                 <Link
                   to="/login"
-                  className="text-[10px] uppercase tracking-[0.2em] text-white/50 hover:text-white transition-colors duration-700"
+                  className="icon-btn"
+                  title="Login"
                 >
-                  [ Login ]
+                  <User size={18} />
                 </Link>
               )}
             </div>

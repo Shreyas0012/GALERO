@@ -1,12 +1,23 @@
-/* Landing page is now fully styled with Tailwind and Framer Motion inline/utility classes */
+/* Landing page styling */
 .landing-page {
-  /* Prevent scroll for the initial immersive view */
-  height: 100vh;
+  min-height: 300vh; /* Allow enough scroll space for 3 sections */
   width: 100vw;
-  overflow: hidden;
-  position: relative;
-  background-color: #020305;
+  background-color: transparent;
 }
+
+.landing-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  box-sizing: border-box;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+}
+
 
 /* Fine architectural grid background */
 .hud-grid {

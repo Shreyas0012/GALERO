@@ -1,26 +1,16 @@
-/* ── Navbar Shell ─────────────────────────── */
+/* ── Navbar Shell (Vertical Left Sidebar on Desktop) ─────────────────────────── */
 .navbar {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   z-index: var(--z-overlay);
-  background-color: transparent;
+  background-color: rgba(2, 3, 5, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
   padding: var(--space-3) var(--space-4);
-  opacity: 0.2;
-  transition: opacity 1.5s ease;
-  mix-blend-mode: difference;
-}
-
-.navbar:hover {
-  opacity: 1;
-}
-
-/* Always fully visible on mobile */
-@media (max-width: 768px) {
-  .navbar {
-    opacity: 1;
-  }
+  transition: all var(--transition-normal);
 }
 
 /* ── Container ────────────────────────────── */
@@ -29,6 +19,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+  width: 100%;
+  height: 100%;
 }
 
 /* ── Left Section ─────────────────────────── */
@@ -39,7 +31,7 @@
   flex-shrink: 0;
 }
 
-/* ── Desktop Nav Links (hidden on mobile) ─── */
+/* ── Desktop Nav Links ─── */
 .navbar-links {
   display: none;
   gap: var(--space-8);
@@ -50,9 +42,13 @@
   text-decoration: none;
   font-size: 0.7rem;
   font-weight: 400;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   transition: color var(--transition-slow);
+}
+
+.navbar-links a:hover {
+  color: #fff;
 }
 
 /* ── Right Actions ────────────────────────── */
@@ -99,31 +95,125 @@
   color: var(--text-primary);
 }
 
-/* ── Desktop Breakpoint ─────────────────────── */
+/* ── Desktop Sidebar Viewport Breakpoint (Floating Left Capsule Menu Card) ─── */
 @media (min-width: 768px) {
+  /* Top Horizontal Header ONLY for Logo and Cart Trigger */
   .navbar {
-    padding: var(--space-4) var(--space-6);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    border-bottom: none;
+    background-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    padding: var(--space-6) var(--space-8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .navbar-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    padding: 0;
   }
 
   .menu-btn {
     display: none;
   }
 
+  /* Hide navigation links inside the top header */
+  .navbar .navbar-links-desktop-hidden {
+    display: none;
+  }
+
+  /* Floating Left-Middle Card Menu Block (Perfect Fit) */
   .navbar-links {
+    position: fixed;
+    left: 3rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 180px; /* Perfect width to fit explore/collections/dashboard text */
+    height: auto;
     display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.15rem;
+    z-index: var(--z-overlay);
+    background: rgba(10, 12, 20, 0.75);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.5rem 1.25rem;
+    box-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    margin: 0;
+  }
+
+  .navbar-links a {
+    position: relative;
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding-left: 0;
+    width: 100%;
+  }
+
+  /* Hover & Active states with left indent and square bullet */
+  .navbar-links a.active,
+  .navbar-links a:hover {
+    color: #ffffff;
+    padding-left: 1.25rem;
+  }
+
+  .navbar-links a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 5px;
+    height: 5px;
+    background-color: #ffffff;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.3s ease;
+  }
+
+  .navbar-links a.active::before,
+  .navbar-links a:hover::before {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .nav-text-label {
+    display: inline;
+  }
+
+  /* Keep top-right actions layout */
+  .navbar-actions {
+    flex-direction: row;
+    gap: var(--space-4);
   }
 
   .navbar-user-desktop {
     display: flex;
     align-items: center;
+    justify-content: center;
   }
 
   .navbar-user-mobile {
     display: none;
-  }
-
-  .navbar-actions {
-    gap: var(--space-4);
   }
 }
 

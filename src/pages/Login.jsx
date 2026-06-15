@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Loader, ShieldAlert, ArrowLeft } from 'lucide-react';
+import { Loader, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../data/api';
@@ -45,7 +45,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -57,7 +57,7 @@ export default function Login() {
     try {
       const data = await authApi.login({ email, password });
       login({ id: data.id, name: data.name, email: data.email, role: data.role }, data.token);
-      
+
       if (data.role === 'ADMIN') navigate('/admin');
       else if (data.role === 'ARTIST') navigate('/dashboard/artist');
       else navigate('/');
@@ -70,9 +70,9 @@ export default function Login() {
 
   const cardVariants = {
     hidden: { opacity: 0, scale: 0.97, y: 15 },
-    visible: { 
-      opacity: 1, 
-      scale: 1, 
+    visible: {
+      opacity: 1,
+      scale: 1,
       y: 0,
       transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
     }
@@ -88,7 +88,7 @@ export default function Login() {
 
       {/* Floating Glass Card container shifted to the right */}
       <div className="register-card-wrapper">
-        <motion.div 
+        <motion.div
           className="register-glass-card"
           variants={cardVariants}
           initial="hidden"
@@ -96,12 +96,6 @@ export default function Login() {
         >
           {/* Form Column */}
           <div className="register-form-side">
-            {/* Back to main page */}
-            <Link to="/" className="register-back-link">
-              <ArrowLeft size={14} />
-              <span>Back to home</span>
-            </Link>
-
             {/* Logo */}
             <div className="register-logo-container">
               <div className="register-logo-dot" />
@@ -114,7 +108,7 @@ export default function Login() {
             {/* Errors */}
             <AnimatePresence mode="wait">
               {error && (
-                <motion.div 
+                <motion.div
                   className="register-error-banner"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -131,10 +125,10 @@ export default function Login() {
               {/* Email */}
               <div className="register-input-group">
                 <label>Email Address</label>
-                <input 
-                  type="email" 
-                  required 
-                  value={email} 
+                <input
+                  type="email"
+                  required
+                  value={email}
                   onChange={e => setEmail(e.target.value)}
                   className="register-input"
                   placeholder="Enter your email"
@@ -144,10 +138,10 @@ export default function Login() {
               {/* Password */}
               <div className="register-input-group" style={{ marginBottom: '1.5rem' }}>
                 <label>Password</label>
-                <input 
-                  type="password" 
-                  required 
-                  value={password} 
+                <input
+                  type="password"
+                  required
+                  value={password}
                   onChange={e => setPassword(e.target.value)}
                   className="register-input"
                   placeholder="Enter your password"
@@ -155,9 +149,9 @@ export default function Login() {
               </div>
 
               {/* Submit */}
-              <motion.button 
-                type="submit" 
-                className="register-btn-submit" 
+              <motion.button
+                type="submit"
+                className="register-btn-submit"
                 disabled={loading}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}

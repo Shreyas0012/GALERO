@@ -246,3 +246,10 @@ select {
   animation: marquee 20s linear infinite;
   width: max-content;
 }
+
+/* Sidebar Layout Offset on Desktop */
+@media (min-width: 768px) {
+  #root {
+    padding-left: 180px;
+  }
+}
