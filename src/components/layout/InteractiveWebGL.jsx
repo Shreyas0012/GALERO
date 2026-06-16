@@ -470,10 +470,10 @@ export default function InteractiveWebGL() {
           const choppy = Math.sin(x * 0.08 - time * 1.2) * 1.0 + Math.cos(flowY * 0.06 + time * 1.0) * 1.0;
           const ripple = Math.sin(x * 0.22 + time * 2.2) * 0.25;
 
-          // Waterfall bend: bend grid down dynamically based on scroll fallEase starting at Z = -450 (y = 50 in local coordinates)
+          // Waterfall bend: bend grid down dynamically based on scroll fallEase starting at world Z = -450 (local y = -50.0)
           let waterfallBend = 0.0;
-          if (y < 50.0) {
-            const dist = y - 50.0;
+          if (y > -50.0) {
+            const dist = -50.0 - y;
             waterfallBend = dist * dist * -0.0018 * fallEase; // bend downwards in Z (world height)
           }
 
