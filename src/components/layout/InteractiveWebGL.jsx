@@ -18,7 +18,7 @@ export default function InteractiveWebGL() {
     let pillars = [], pillarGeo, pillarMat;
     let mountains = [], mountainGeo, mountainMat;
     let lightBars = [], lightBarGeo, lightBarMat;
-    let moon, moonAuraGroup, stars, starGeo, starMat, moonGeo, moonMat;
+    let moon, moonAuraGroup, stars, starGeo, starMat, moonGeo, moonMat, skyMesh, skyGeo, skyMat;
 
     try {
        // --- 1. SETUP CORE SCENE ELEMENTS ---
@@ -39,8 +39,8 @@ export default function InteractiveWebGL() {
       const ambientLight = new THREE.AmbientLight(0x0e111a, 0.35); // soft ambient indigo night sky fill
       scene.add(ambientLight);
 
-       const sunLight = new THREE.DirectionalLight(0xa5b4fc, 1.8); // strong moonlight from distance
-       sunLight.position.set(220, 240, -850); // Aligned exactly with the large moon's position
+       const sunLight = new THREE.DirectionalLight(0xa5b4fc, 2.0); // strong moonlight from distance
+       sunLight.position.set(250, 280, -850); // Aligned exactly with the giant moon's position
        scene.add(sunLight);
  
        // Cyan rim light placed behind the mountains to trace their ridges in neon blue glow
@@ -48,29 +48,58 @@ export default function InteractiveWebGL() {
        mountainGlowLight.position.set(0, 100, -900);
        scene.add(mountainGlowLight);
 
-       // --- 2.1 CELESTIAL BACKGROUND (STARFIELD & MOON) ---
-       // Starry Night Sky (300 twinkling stars far in the background)
+       // --- 2.1 CELESTIAL BACKGROUND (STARFIELD, SKY GLOW & MOON) ---
+       // Illuminated Night Sky Plane (Z = -990, creates soft atmospheric moonlight glow)
+       skyGeo = new THREE.PlaneGeometry(3000, 2000);
+       const skyCanvas = document.createElement('canvas');
+       skyCanvas.width = 1024;
+       skyCanvas.height = 1024;
+       const skyCtx = skyCanvas.getContext('2d');
+       if (skyCtx) {
+         // Radial gradient centered exactly on the giant moon's projection
+         const skyGrad = skyCtx.createRadialGradient(768, 220, 30, 768, 220, 850);
+         skyGrad.addColorStop(0, '#c7d2fe');      // Bright silver moon center glow
+         skyGrad.addColorStop(0.12, '#314275');   // Luminous soft blue-indigo haze
+         skyGrad.addColorStop(0.35, '#080c1b');   // Shading into deep dark night-indigo
+         skyGrad.addColorStop(0.70, '#010206');   // Transitional dark blue-black
+         skyGrad.addColorStop(1, '#000000');      // Pitch black void at outer edges
+         
+         skyCtx.fillStyle = skyGrad;
+         skyCtx.fillRect(0, 0, 1024, 1024);
+       }
+       const skyTexture = new THREE.CanvasTexture(skyCanvas);
+       skyMat = new THREE.MeshBasicMaterial({
+         map: skyTexture,
+         depthWrite: false,
+         transparent: true,
+         opacity: 1.0
+       });
+       skyMesh = new THREE.Mesh(skyGeo, skyMat);
+       skyMesh.position.set(0, 0, -990);
+       scene.add(skyMesh);
+
+       // Starry Night Sky (350 stars placed just in front of the sky glow)
        const starCount = 350;
        starGeo = new THREE.BufferGeometry();
        const starPositions = new Float32Array(starCount * 3);
        for (let i = 0; i < starCount; i++) {
          starPositions[i * 3] = (Math.random() - 0.5) * 800; // X
          starPositions[i * 3 + 1] = Math.random() * 400 + 40; // Y (high in sky)
-         starPositions[i * 3 + 2] = -950 - Math.random() * 40; // Z (far back)
+         starPositions[i * 3 + 2] = -980 - Math.random() * 10; // Z (between sky and moon)
        }
        starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
        starMat = new THREE.PointsMaterial({
          color: 0xffffff,
          size: 1.6,
          transparent: true,
-         opacity: 0.65,
+         opacity: 0.75,
          sizeAttenuation: true
        });
        stars = new THREE.Points(starGeo, starMat);
        scene.add(stars);
 
-       // Pale Moonlight Source (The Moon - Large and Luminous)
-       moonGeo = new THREE.SphereGeometry(45, 32, 32); // Increased to radius 45 for a massive, dramatic presence
+       // Pale Moonlight Source (The Moon - Giant and Detailed)
+       moonGeo = new THREE.SphereGeometry(95, 32, 32); // Increased to radius 95 for a massive, dramatic sky profile
        
        // High-quality procedural fallback texture map
        const moonCanvas = document.createElement('canvas');
@@ -134,13 +163,13 @@ export default function InteractiveWebGL() {
        );
 
        moon = new THREE.Mesh(moonGeo, moonMat);
-       moon.position.set(220, 240, -850); // Massive, placed high up in the canyon sky
+       moon.position.set(250, 280, -850); // Massive, placed high up in the canyon sky
        scene.add(moon);
 
        // Layered Glowing Moon Aura (Spreads luminous moonlight across the night sky)
        moonAuraGroup = new THREE.Group();
-       const moonAuraSizes = [56, 85, 120, 180]; // Scaled up to match large moon
-       const moonAuraOpacities = [0.45, 0.25, 0.12, 0.04];
+       const moonAuraSizes = [110, 150, 210, 300]; // Scaled up to match massive moon
+       const moonAuraOpacities = [0.48, 0.26, 0.14, 0.05];
        moonAuraSizes.forEach((r, idx) => {
          const auraGeo = new THREE.SphereGeometry(r, 16, 16);
          const auraMat = new THREE.MeshBasicMaterial({
@@ -810,6 +839,11 @@ export default function InteractiveWebGL() {
           }
         }
 
+        // Smoothly fade out the sky glow plane as we plunge down the canyon dimension
+        if (skyMat) {
+          skyMat.opacity = 1.0 - fallEase * 0.95;
+        }
+
         if (renderer && scene && camera) {
           renderer.render(scene, camera);
         }
@@ -843,6 +877,7 @@ export default function InteractiveWebGL() {
           if (moon) scene.remove(moon);
           if (moonAuraGroup) scene.remove(moonAuraGroup);
           if (stars) scene.remove(stars);
+          if (skyMesh) scene.remove(skyMesh);
           if (pillars) {
             pillars.forEach((p) => scene.remove(p));
           }
@@ -868,6 +903,8 @@ export default function InteractiveWebGL() {
         if (moonMat) moonMat.dispose();
         if (starGeo) starGeo.dispose();
         if (starMat) starMat.dispose();
+        if (skyGeo) skyGeo.dispose();
+        if (skyMat) skyMat.dispose();
         if (auraGeos) {
           auraGeos.forEach((geo) => geo.dispose());
         }
