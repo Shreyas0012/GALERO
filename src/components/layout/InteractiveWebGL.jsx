@@ -707,15 +707,8 @@ export default function InteractiveWebGL() {
       window.addEventListener('scroll', handleScroll);
 
       // --- 4. RESPONSIVE WINDOW RESIZING ---
-      let lastWidth = window.innerWidth;
       const handleResize = () => {
         if (camera && renderer) {
-          // On mobile, ignore height-only resizes (caused by address bar showing/hiding)
-          // to prevent stretching, jumping, and unnecessary re-renders.
-          if (isMobile && window.innerWidth === lastWidth) {
-            return;
-          }
-          lastWidth = window.innerWidth;
           camera.aspect = window.innerWidth / window.innerHeight;
           camera.updateProjectionMatrix();
           renderer.setSize(window.innerWidth, window.innerHeight);
@@ -1032,6 +1025,7 @@ export default function InteractiveWebGL() {
   return (
     <div
       ref={containerRef}
+      className="webgl-container"
       style={{
         position: 'fixed',
         top: 0,

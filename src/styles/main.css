@@ -48,6 +48,13 @@ body::-webkit-scrollbar {
   flex-direction: column;
 }
 
+.webgl-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  pointer-events: none;
+}
+
 /* Mobile full-screen layout helpers */
 .hero {
   min-height: 100dvh;
