@@ -579,7 +579,8 @@ export default function InteractiveWebGL() {
       // --- 2.4 REALISTIC WAVING OCEAN (Spread wider to 1000 units for ultra-wide support) ---
       const floorWidth = 1000;
       const floorHeight = 1200;
-      floorGeo = new THREE.PlaneGeometry(floorWidth, floorHeight, 180, 220); // High-density grid for silky-smooth waves
+      // Drastically reduce segment resolution on mobile to save CPU rendering resources
+      floorGeo = new THREE.PlaneGeometry(floorWidth, floorHeight, isMobile ? 40 : 180, isMobile ? 50 : 220);
       floorMat = new THREE.MeshPhysicalMaterial({
         color: 0x000511, // Deep black-indigo ocean
         roughness: 0.12, // Slick, glossy surface
@@ -730,8 +731,13 @@ export default function InteractiveWebGL() {
         
         const elapsedTime = clock.getElapsedTime();
 
+        // Direct scroll query inside render loop bypasses mobile touch event lag/throttling
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollY = window.scrollY || window.pageYOffset || 0;
+        targetScrollPercent = scrollY / (maxScroll || 1);
+
         // Linear Interpolation (Lerp) for smooth scroll percentages
-        currentScrollPercent += (targetScrollPercent - currentScrollPercent) * 0.03;
+        currentScrollPercent += (targetScrollPercent - currentScrollPercent) * 0.05;
 
         // Two-phase camera control based on remapped scroll progress:
         const progress = currentScrollPercent;
