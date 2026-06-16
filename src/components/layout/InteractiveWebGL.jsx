@@ -309,6 +309,43 @@ export default function InteractiveWebGL() {
       scene.add(m7);
       mountains.push(m7);
 
+      // Add 6 more sideways mountains flanking the river banks closer to the camera
+      const m8 = new THREE.Mesh(mountainGeo, mountainMat);
+      m8.position.set(-120, 40, -380);
+      m8.scale.set(0.7, 0.7, 0.7);
+      scene.add(m8);
+      mountains.push(m8);
+
+      const m9 = new THREE.Mesh(mountainGeo, mountainMat);
+      m9.position.set(120, 30, -420);
+      m9.scale.set(0.65, 0.65, 0.65);
+      scene.add(m9);
+      mountains.push(m9);
+
+      const m10 = new THREE.Mesh(mountainGeo, mountainMat);
+      m10.position.set(-130, 50, -540);
+      m10.scale.set(0.8, 0.8, 0.8);
+      scene.add(m10);
+      mountains.push(m10);
+
+      const m11 = new THREE.Mesh(mountainGeo, mountainMat);
+      m11.position.set(130, 40, -560);
+      m11.scale.set(0.75, 0.75, 0.75);
+      scene.add(m11);
+      mountains.push(m11);
+
+      const m12 = new THREE.Mesh(mountainGeo, mountainMat);
+      m12.position.set(-140, 30, -250);
+      m12.scale.set(0.5, 0.5, 0.5);
+      scene.add(m12);
+      mountains.push(m12);
+
+      const m13 = new THREE.Mesh(mountainGeo, mountainMat);
+      m13.position.set(140, 20, -280);
+      m13.scale.set(0.45, 0.45, 0.45);
+      scene.add(m13);
+      mountains.push(m13);
+
       // --- 2.4 REALISTIC WAVING OCEAN (Spread wider to 1000 units for ultra-wide support) ---
       const floorWidth = 1000;
       const floorHeight = 1200;
