@@ -18,6 +18,7 @@ export default function InteractiveWebGL() {
     let pillars = [], pillarGeo, pillarMat;
     let mountains = [], mountainGeo, mountainMat;
     let lightBars = [], lightBarGeo, lightBarMat;
+    let moon, moonAuraGroup, stars, starGeo, starMat, moonGeo, moonMat;
 
     try {
        // --- 1. SETUP CORE SCENE ELEMENTS ---
@@ -39,7 +40,7 @@ export default function InteractiveWebGL() {
       scene.add(ambientLight);
 
        const sunLight = new THREE.DirectionalLight(0xa5b4fc, 1.8); // strong moonlight from distance
-       sunLight.position.set(150, 180, -450); // Positioned higher and further back to light up mountain peaks
+       sunLight.position.set(160, 180, -850); // Aligned exactly with the moon's position
        scene.add(sunLight);
  
        // Cyan rim light placed behind the mountains to trace their ridges in neon blue glow
@@ -47,8 +48,58 @@ export default function InteractiveWebGL() {
        mountainGlowLight.position.set(0, 100, -900);
        scene.add(mountainGlowLight);
 
-      // --- 2.2 SCENE FOG ---
-      scene.fog = new THREE.FogExp2(0x030816, 0.0018);
+       // --- 2.1 CELESTIAL BACKGROUND (STARFIELD & MOON) ---
+       // Starry Night Sky (300 twinkling stars far in the background)
+       const starCount = 350;
+       starGeo = new THREE.BufferGeometry();
+       const starPositions = new Float32Array(starCount * 3);
+       for (let i = 0; i < starCount; i++) {
+         starPositions[i * 3] = (Math.random() - 0.5) * 800; // X
+         starPositions[i * 3 + 1] = Math.random() * 400 + 40; // Y (high in sky)
+         starPositions[i * 3 + 2] = -950 - Math.random() * 40; // Z (far back)
+       }
+       starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+       starMat = new THREE.PointsMaterial({
+         color: 0xffffff,
+         size: 1.6,
+         transparent: true,
+         opacity: 0.65,
+         sizeAttenuation: true
+       });
+       stars = new THREE.Points(starGeo, starMat);
+       scene.add(stars);
+
+       // Pale Moonlight Source (The Moon)
+       moonGeo = new THREE.SphereGeometry(18, 32, 32);
+       moonMat = new THREE.MeshBasicMaterial({
+         color: 0xf5f7ff // Pale silver-white moon surface
+       });
+       moon = new THREE.Mesh(moonGeo, moonMat);
+       moon.position.set(160, 180, -850); // Placed high up, flanking the canyon
+       scene.add(moon);
+
+       // Layered Glowing Moon Aura (Spreads moonlight across the night sky)
+       moonAuraGroup = new THREE.Group();
+       const moonAuraSizes = [22, 36, 56, 85];
+       const moonAuraOpacities = [0.42, 0.24, 0.12, 0.04];
+       moonAuraSizes.forEach((r, idx) => {
+         const auraGeo = new THREE.SphereGeometry(r, 16, 16);
+         const auraMat = new THREE.MeshBasicMaterial({
+           color: 0xa5b4fc, // Soft blue-indigo moonlight
+           transparent: true,
+           opacity: moonAuraOpacities[idx],
+           blending: THREE.AdditiveBlending,
+           side: THREE.BackSide,
+           depthWrite: false
+         });
+         const auraMesh = new THREE.Mesh(auraGeo, auraMat);
+         moonAuraGroup.add(auraMesh);
+       });
+       moonAuraGroup.position.copy(moon.position);
+       scene.add(moonAuraGroup);
+
+       // --- 2.2 SCENE FOG ---
+       scene.fog = new THREE.FogExp2(0x030816, 0.0018);
 
       // --- 2.3 ADD REALISTIC GLASS CUBE WITH INDENTED GLOWING GROOVES ---
       // Define unique drawing patterns for each of the 6 cube faces to look like an asymmetric tech core
@@ -730,6 +781,9 @@ export default function InteractiveWebGL() {
           if (floorGrid) scene.remove(floorGrid);
           if (oceanParticles) scene.remove(oceanParticles);
           if (lightTarget) scene.remove(lightTarget);
+          if (moon) scene.remove(moon);
+          if (moonAuraGroup) scene.remove(moonAuraGroup);
+          if (stars) scene.remove(stars);
           if (pillars) {
             pillars.forEach((p) => scene.remove(p));
           }
@@ -751,6 +805,10 @@ export default function InteractiveWebGL() {
         if (mountainMat) mountainMat.dispose();
         if (lightBarGeo) lightBarGeo.dispose();
         if (lightBarMat) lightBarMat.dispose();
+        if (moonGeo) moonGeo.dispose();
+        if (moonMat) moonMat.dispose();
+        if (starGeo) starGeo.dispose();
+        if (starMat) starMat.dispose();
         if (auraGeos) {
           auraGeos.forEach((geo) => geo.dispose());
         }
