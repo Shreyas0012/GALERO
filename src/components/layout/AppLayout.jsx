@@ -7,7 +7,7 @@ export default function AppLayout() {
   return (
     <>
       <SphereBackground />
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
         <Navbar />
         <main style={{ flex: 1 }}>
           <Outlet />

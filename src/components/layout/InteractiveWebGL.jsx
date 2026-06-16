@@ -915,6 +915,9 @@ export default function InteractiveWebGL() {
           }
           if (scene.background) {
             scene.background.lerpColors(new THREE.Color(0x020617), new THREE.Color(0x000000), fallEase);
+            if (container) {
+              container.style.backgroundColor = `#${scene.background.getHexString()}`;
+            }
           }
         }
 

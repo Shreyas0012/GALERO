@@ -1,9 +1,10 @@
 .footer {
+  width: 100%;
   background-color: var(--bg-secondary);
   border-top: 1px solid var(--border-color);
   padding: var(--space-10) 0 var(--space-6);
   margin-top: auto;
-  margin-bottom: var(--space-10);
+  overflow: hidden; /* Prevent child content from bleeding outside on mobile */
 }
 
 .footer-container {
@@ -81,7 +82,6 @@
   align-items: center;
   gap: var(--space-4);
   padding-top: var(--space-4);
-  margin-bottom: var(--space-15);
   border-top: 1px solid var(--border-color);
   font-size: 0.75rem;
   color: var(--text-muted);

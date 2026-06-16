@@ -18,19 +18,22 @@ body,
   width: 100%;
   min-height: 100%;
   overflow-x: hidden;
-  background: #000;
+  /* Solid background that matches WebGL scene – prevents any flash strip during overscroll */
+  background: #020617;
 }
 
 html,
 body {
-  overscroll-behavior-y: none; /* Prevent elastic bounce/stretching on mobile scroll */
+  /* Block all elastic overscroll that exposes the body bg beneath fixed elements */
+  overscroll-behavior: none;
   font-family: var(--font-sans);
-  background-color: var(--bg-primary);
+  /* Match the WebGL night sky – any briefly exposed body bg will be invisible */
+  background-color: #020617;
   color: var(--text-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color var(--transition-normal), color var(--transition-normal);
+  /* NO transition on background-color – removes the visible colour-shift flash */
 
   /* Hide scrollbar */
   -ms-overflow-style: none;
