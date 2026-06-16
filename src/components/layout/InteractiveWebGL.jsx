@@ -37,9 +37,14 @@ export default function InteractiveWebGL() {
       const ambientLight = new THREE.AmbientLight(0x0e111a, 0.35); // soft ambient indigo night sky fill
       scene.add(ambientLight);
 
-      const sunLight = new THREE.DirectionalLight(0xa5b4fc, 1.0); // strong moonlight from distance
-      sunLight.position.set(100, 150, -300);
-      scene.add(sunLight);
+       const sunLight = new THREE.DirectionalLight(0xa5b4fc, 1.8); // strong moonlight from distance
+       sunLight.position.set(150, 180, -450); // Positioned higher and further back to light up mountain peaks
+       scene.add(sunLight);
+ 
+       // Cyan rim light placed behind the mountains to trace their ridges in neon blue glow
+       const mountainGlowLight = new THREE.DirectionalLight(0x00d2ff, 1.6);
+       mountainGlowLight.position.set(0, 100, -900);
+       scene.add(mountainGlowLight);
 
       // --- 2.2 SCENE FOG ---
       scene.fog = new THREE.FogExp2(0x030816, 0.0018);
@@ -278,6 +283,31 @@ export default function InteractiveWebGL() {
       m2.scale.set(1.3, 1.3, 1.3);
       scene.add(m2);
       mountains.push(m2);
+
+      // Add 4 more flanking mountains for a dense canyon silhouette
+      const m4 = new THREE.Mesh(mountainGeo, mountainMat);
+      m4.position.set(-260, 70, -950);
+      m4.scale.set(1.1, 1.1, 1.1);
+      scene.add(m4);
+      mountains.push(m4);
+
+      const m5 = new THREE.Mesh(mountainGeo, mountainMat);
+      m5.position.set(260, 50, -940);
+      m5.scale.set(1.0, 1.0, 1.0);
+      scene.add(m5);
+      mountains.push(m5);
+
+      const m6 = new THREE.Mesh(mountainGeo, mountainMat);
+      m6.position.set(-180, 40, -820);
+      m6.scale.set(0.9, 0.9, 0.9);
+      scene.add(m6);
+      mountains.push(m6);
+
+      const m7 = new THREE.Mesh(mountainGeo, mountainMat);
+      m7.position.set(180, 30, -850);
+      m7.scale.set(0.85, 0.85, 0.85);
+      scene.add(m7);
+      mountains.push(m7);
 
       // --- 2.4 REALISTIC WAVING OCEAN (Spread wider to 1000 units for ultra-wide support) ---
       const floorWidth = 1000;
