@@ -232,22 +232,23 @@ export default function InteractiveWebGL() {
       }
 
       // Create organic, realistic dark mountain peaks with procedural ridge displacement
-      mountainGeo = new THREE.ConeGeometry(180, 320, 32, 32); // High-density grid for organic details
+      // Using a narrower base (radius 90) and higher peak (height 360) to avoid center clipping
+      mountainGeo = new THREE.ConeGeometry(90, 360, 32, 32); // High-density grid for organic details
       const mPos = mountainGeo.attributes.position;
       for (let i = 0; i < mPos.count; i++) {
         const x = mPos.getX(i);
         const y = mPos.getY(i);
         const z = mPos.getZ(i);
 
-        // Base is at y = -160, peak is at y = 160. Height ranges over 320 units.
-        const heightFactor = (y + 160) / 320; 
+        // Base is at y = -180, peak is at y = 180. Height ranges over 360 units.
+        const heightFactor = (y + 180) / 360; 
 
         // Apply fractal noise displacement on the mountain body, leaving base and tip sharp
         if (heightFactor > 0.05 && heightFactor < 0.95) {
           const angle = Math.atan2(z, x);
-          const noise = Math.sin(angle * 5.0) * Math.cos(y * 0.08) * 22.0 + 
-                        Math.cos(angle * 12.0) * Math.sin(y * 0.15) * 10.0 + 
-                        Math.sin(angle * 2.0) * 14.0;
+          const noise = Math.sin(angle * 5.0) * Math.cos(y * 0.08) * 16.0 + 
+                        Math.cos(angle * 12.0) * Math.sin(y * 0.15) * 8.0 + 
+                        Math.sin(angle * 2.0) * 10.0;
 
           // Scale displacement so it tapers off towards the base and tip
           const scale = Math.sin(heightFactor * Math.PI);
@@ -267,82 +268,82 @@ export default function InteractiveWebGL() {
 
       // Left Peak: camera passes it on the left
       const m1 = new THREE.Mesh(mountainGeo, mountainMat);
-      m1.position.set(-110, 60, -680);
+      m1.position.set(-150, 80, -680);
+      m1.scale.set(1.1, 1.1, 1.1);
       scene.add(m1);
       mountains.push(m1);
 
       // Right Peak: camera passes it on the right
       const m3 = new THREE.Mesh(mountainGeo, mountainMat);
-      m3.position.set(110, 40, -720);
+      m3.position.set(150, 60, -720);
       scene.add(m3);
       mountains.push(m3);
 
       // Center Peak: far background mountain to look at down the path
       const m2 = new THREE.Mesh(mountainGeo, mountainMat);
-      m2.position.set(0, 80, -960); 
-      m2.scale.set(1.3, 1.3, 1.3);
+      m2.position.set(0, 100, -960); 
+      m2.scale.set(1.5, 1.5, 1.5);
       scene.add(m2);
       mountains.push(m2);
 
       // Add 4 more flanking mountains for a dense canyon silhouette
       const m4 = new THREE.Mesh(mountainGeo, mountainMat);
-      m4.position.set(-260, 70, -950);
-      m4.scale.set(1.1, 1.1, 1.1);
+      m4.position.set(-280, 90, -950);
+      m4.scale.set(1.3, 1.3, 1.3);
       scene.add(m4);
       mountains.push(m4);
 
       const m5 = new THREE.Mesh(mountainGeo, mountainMat);
-      m5.position.set(260, 50, -940);
-      m5.scale.set(1.0, 1.0, 1.0);
+      m5.position.set(280, 70, -940);
+      m5.scale.set(1.2, 1.2, 1.2);
       scene.add(m5);
       mountains.push(m5);
 
       const m6 = new THREE.Mesh(mountainGeo, mountainMat);
-      m6.position.set(-180, 40, -820);
-      m6.scale.set(0.9, 0.9, 0.9);
+      m6.position.set(-160, 60, -820);
       scene.add(m6);
       mountains.push(m6);
 
       const m7 = new THREE.Mesh(mountainGeo, mountainMat);
-      m7.position.set(180, 30, -850);
-      m7.scale.set(0.85, 0.85, 0.85);
+      m7.position.set(160, 50, -850);
+      m7.scale.set(0.95, 0.95, 0.95);
       scene.add(m7);
       mountains.push(m7);
 
       // Add 6 more sideways mountains flanking the river banks closer to the camera
       const m8 = new THREE.Mesh(mountainGeo, mountainMat);
-      m8.position.set(-120, 40, -380);
-      m8.scale.set(0.7, 0.7, 0.7);
+      m8.position.set(-135, 50, -380);
+      m8.scale.set(0.85, 0.85, 0.85);
       scene.add(m8);
       mountains.push(m8);
 
       const m9 = new THREE.Mesh(mountainGeo, mountainMat);
-      m9.position.set(120, 30, -420);
-      m9.scale.set(0.65, 0.65, 0.65);
+      m9.position.set(135, 40, -420);
+      m9.scale.set(0.8, 0.8, 0.8);
       scene.add(m9);
       mountains.push(m9);
 
       const m10 = new THREE.Mesh(mountainGeo, mountainMat);
-      m10.position.set(-130, 50, -540);
-      m10.scale.set(0.8, 0.8, 0.8);
+      m10.position.set(-145, 60, -540);
+      m10.scale.set(0.95, 0.95, 0.95);
       scene.add(m10);
       mountains.push(m10);
 
       const m11 = new THREE.Mesh(mountainGeo, mountainMat);
-      m11.position.set(130, 40, -560);
-      m11.scale.set(0.75, 0.75, 0.75);
+      m11.position.set(145, 50, -560);
+      m11.scale.set(0.9, 0.9, 0.9);
       scene.add(m11);
       mountains.push(m11);
 
       const m12 = new THREE.Mesh(mountainGeo, mountainMat);
-      m12.position.set(-140, 30, -250);
-      m12.scale.set(0.5, 0.5, 0.5);
+      m12.position.set(-120, 30, -250);
+      m12.scale.set(0.7, 0.7, 0.7);
       scene.add(m12);
       mountains.push(m12);
 
       const m13 = new THREE.Mesh(mountainGeo, mountainMat);
-      m13.position.set(140, 20, -280);
-      m13.scale.set(0.45, 0.45, 0.45);
+      m13.position.set(120, 20, -280);
+      m13.scale.set(0.65, 0.65, 0.65);
       scene.add(m13);
       mountains.push(m13);
 
