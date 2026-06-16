@@ -17,7 +17,7 @@ export default function InteractiveWebGL() {
     let flowOffset = 0;
     let pillars = [], pillarGeo, pillarMat;
     let mountains = [], mountainGeo, mountainMat;
-    let portalGroup, portalRing, portalInner, portalGeo, portalMat, portalInnerGeo, portalInnerMat;
+    let lightBars = [], lightBarGeo, lightBarMat;
 
     try {
        // --- 1. SETUP CORE SCENE ELEMENTS ---
@@ -348,36 +348,23 @@ export default function InteractiveWebGL() {
       scene.add(m13);
       mountains.push(m13);
 
-      // --- 2.3.5 FUTURISTIC GLOWING WARP PORTAL ---
-      portalGroup = new THREE.Group();
-      
-      // Giant glowing technical ring
-      portalGeo = new THREE.TorusGeometry(32, 2.0, 16, 100);
-      portalMat = new THREE.MeshBasicMaterial({
-        color: 0x00f8ff, // Bright cyan
+      // --- 2.3.5 ROUTE OF LIGHT Tech Sleepers/Guides ---
+      // Thin glowing horizontal bar guides along the river bed forming a runway/route of light
+      lightBarGeo = new THREE.BoxGeometry(80, 0.4, 1.2);
+      lightBarMat = new THREE.MeshBasicMaterial({
+        color: 0x00f8ff, // Bright neon cyan
         transparent: true,
-        opacity: 0.85,
-        blending: THREE.AdditiveBlending,
-        wireframe: true // Technical blueprint style
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending
       });
-      portalRing = new THREE.Mesh(portalGeo, portalMat);
-      portalGroup.add(portalRing);
 
-      // Inner swirling energy ring
-      portalInnerGeo = new THREE.TorusGeometry(26, 0.4, 8, 64);
-      portalInnerMat = new THREE.MeshBasicMaterial({
-        color: 0x0055ff, // Deep blue inner swirl
-        transparent: true,
-        opacity: 0.6,
-        blending: THREE.AdditiveBlending,
-        wireframe: true
-      });
-      portalInner = new THREE.Mesh(portalInnerGeo, portalInnerMat);
-      portalGroup.add(portalInner);
-
-      // Positioned exactly along the camera's plunge path (flanked by the mountains at Z = -720)
-      portalGroup.position.set(0, -180, -720);
-      scene.add(portalGroup);
+      for (let i = 0; i < 20; i++) {
+        const zPos = -150 - i * 50; // Spaced 50 units apart along Z (covers -150 to -1100)
+        const bar = new THREE.Mesh(lightBarGeo, lightBarMat);
+        bar.position.set(0, -22, zPos);
+        scene.add(bar);
+        lightBars.push(bar);
+      }
 
       // --- 2.4 REALISTIC WAVING OCEAN (Spread wider to 1000 units for ultra-wide support) ---
       const floorWidth = 1000;
@@ -662,25 +649,24 @@ export default function InteractiveWebGL() {
           crystal2.mesh.position.y = 8 + Math.cos(elapsedTime * 0.6) * 0.5;
         }
 
-        // Rotate portal rings in opposite directions for swirling energy effect
-        if (portalRing) {
-          portalRing.rotation.z = elapsedTime * 0.8;
-        }
-        if (portalInner) {
-          portalInner.rotation.z = -elapsedTime * 1.5;
-        }
-        if (portalGroup) {
-          // Subtle dimensional pulse
-          const portalPulse = 1.0 + Math.sin(elapsedTime * 3.0) * 0.04;
-          portalGroup.scale.set(portalPulse, portalPulse, portalPulse);
-        }
+        // Update tech light bars along the route of light to follow the waterfall bend
+        if (lightBars) {
+          lightBars.forEach((bar) => {
+            const z = bar.position.z;
+            let waterfallBend = 0.0;
+            if (z < -450.0) {
+              const dist = z + 450.0;
+              waterfallBend = dist * dist * -0.0018 * fallEase; // matches waterfall curve
+            }
+            bar.position.y = -22.0 + waterfallBend;
 
-        // Fade particle colors from cyan to cosmic violet as we pass through the portal
-        const portalPassFactor = Math.max(0.0, Math.min(1.0, (cameraZ - (-650.0)) / -120.0)); // 0 before Z = -650, 1 at Z = -770
-        if (particleMat) {
-          const baseColor = new THREE.Color(0x00f8ff); // Cyan
-          const dimensionColor = new THREE.Color(0xbd00ff); // Cosmic violet/purple
-          particleMat.uniforms.u_color.value.copy(baseColor).lerp(dimensionColor, portalPassFactor);
+            // Downstream light wave ripple effect
+            const travelOffset = Math.abs((z - flowOffset * 2.0) % 200.0);
+            const pulse = Math.sin(travelOffset * 0.04) * 0.4 + 0.6;
+            if (bar.material) {
+              bar.material.opacity = Math.max(0.15, pulse * 0.85);
+            }
+          });
         }
 
         // Apply smooth camera glide physics (Z translation + vertical waterfall plunge)
@@ -736,8 +722,8 @@ export default function InteractiveWebGL() {
           if (centralGroup) {
             scene.remove(centralGroup);
           }
-          if (portalGroup) {
-            scene.remove(portalGroup);
+          if (lightBars) {
+            lightBars.forEach((bar) => scene.remove(bar));
           }
           if (crystal1 && crystal1.mesh) scene.remove(crystal1.mesh);
           if (crystal2 && crystal2.mesh) scene.remove(crystal2.mesh);
@@ -763,10 +749,8 @@ export default function InteractiveWebGL() {
         if (pillarMat) pillarMat.dispose();
         if (mountainGeo) mountainGeo.dispose();
         if (mountainMat) mountainMat.dispose();
-        if (portalGeo) portalGeo.dispose();
-        if (portalMat) portalMat.dispose();
-        if (portalInnerGeo) portalInnerGeo.dispose();
-        if (portalInnerMat) portalInnerMat.dispose();
+        if (lightBarGeo) lightBarGeo.dispose();
+        if (lightBarMat) lightBarMat.dispose();
         if (auraGeos) {
           auraGeos.forEach((geo) => geo.dispose());
         }
