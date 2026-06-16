@@ -19,8 +19,9 @@ export default function InteractiveWebGL() {
     let mountains = [], mountainGeo, mountainMat;
 
     try {
-      // --- 1. SETUP CORE SCENE ELEMENTS ---
-      scene = new THREE.Scene();
+       // --- 1. SETUP CORE SCENE ELEMENTS ---
+       scene = new THREE.Scene();
+       scene.background = new THREE.Color(0x030816);
 
       // Camera setup
       camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -225,30 +226,32 @@ export default function InteractiveWebGL() {
         pillars.push(pRight);
       }
 
-      // Create a stationary dark mountain range silhouette at a distance (Z = -950)
-      // to serve as a visual background height reference.
-      mountainGeo = new THREE.ConeGeometry(140, 260, 4); // Low-poly tapered pyramids
+      // Create a stationary dark mountain range silhouette
+      // We position two massive peaks flanking the descent path so the camera flies right between them
+      mountainGeo = new THREE.ConeGeometry(180, 320, 4); // Larger peaks for dramatic framing
       mountainMat = new THREE.MeshBasicMaterial({
-        color: 0x010307, // Very dark near-black indigo
+        color: 0x000103, // Ominous near-black
         flatShading: true
       });
 
-      // Spawn three overlapping background mountains
+      // Left Peak: camera passes it on the left
       const m1 = new THREE.Mesh(mountainGeo, mountainMat);
-      m1.position.set(-180, 40, -960);
+      m1.position.set(-110, 60, -680);
       scene.add(m1);
       mountains.push(m1);
 
-      const m2 = new THREE.Mesh(mountainGeo, mountainMat);
-      m2.position.set(0, 70, -980); // Center highest peak
-      m2.scale.set(1.2, 1.2, 1.2);
-      scene.add(m2);
-      mountains.push(m2);
-
+      // Right Peak: camera passes it on the right
       const m3 = new THREE.Mesh(mountainGeo, mountainMat);
-      m3.position.set(180, 30, -950);
+      m3.position.set(110, 40, -720);
       scene.add(m3);
       mountains.push(m3);
+
+      // Center Peak: far background mountain to look at down the path
+      const m2 = new THREE.Mesh(mountainGeo, mountainMat);
+      m2.position.set(0, 80, -960); 
+      m2.scale.set(1.3, 1.3, 1.3);
+      scene.add(m2);
+      mountains.push(m2);
 
       // --- 2.4 REALISTIC WAVING OCEAN (Spread wider to 1000 units for ultra-wide support) ---
       const floorWidth = 1000;
@@ -554,8 +557,14 @@ export default function InteractiveWebGL() {
           camera.lookAt(new THREE.Vector3(0, lookAtTargetY, lookAtTargetZ));
         }
 
-        if (scene && scene.fog) {
-          scene.fog.density = fogDensity;
+        if (scene) {
+          if (scene.fog) {
+            scene.fog.density = fogDensity;
+            scene.fog.color.lerpColors(new THREE.Color(0x030816), new THREE.Color(0x000103), fallEase);
+          }
+          if (scene.background) {
+            scene.background.lerpColors(new THREE.Color(0x030816), new THREE.Color(0x000103), fallEase);
+          }
         }
 
         if (renderer && scene && camera) {
