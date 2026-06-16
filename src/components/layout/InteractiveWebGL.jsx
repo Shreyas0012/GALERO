@@ -18,12 +18,13 @@ export default function InteractiveWebGL() {
     let pillars = [], pillarGeo, pillarMat;
     let mountains = [], mountainGeo, mountainMat;
     let lightBars = [], lightBarGeo, lightBarMat;
-    let moon, moonGlowMesh, glowGeo, glowMat, stars, starGeo, starMat, moonGeo, moonMat, skyMesh, skyGeo, skyMat;
+    let moon, moonGlowMesh, glowGeo, glowMat, stars, starGeo, starMat, moonGeo, moonMat, skyMesh, skyGeo, skyMat, cubeGlowMesh, cubeGlowGeo, cubeGlowMat;
 
     try {
        // --- 1. SETUP CORE SCENE ELEMENTS ---
        scene = new THREE.Scene();
-       scene.background = new THREE.Color(0x030816);
+       scene.background = new THREE.Color(0x020617);
+       const isMobile = window.innerWidth < 768;
 
       // Camera setup
       camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -57,15 +58,16 @@ export default function InteractiveWebGL() {
        const skyCtx = skyCanvas.getContext('2d');
        if (skyCtx) {
          // Radial gradient centered exactly on the giant moon's projection
-         const skyGrad = skyCtx.createRadialGradient(768, 220, 30, 768, 220, 850);
-         skyGrad.addColorStop(0, '#c7d2fe');      // Bright silver moon center glow
-         skyGrad.addColorStop(0.12, '#314275');   // Luminous soft blue-indigo haze
-         skyGrad.addColorStop(0.35, '#080c1b');   // Shading into deep dark night-indigo
-         skyGrad.addColorStop(0.70, '#010206');   // Transitional dark blue-black
-         skyGrad.addColorStop(1, '#000000');      // Pitch black void at outer edges
-         
-         skyCtx.fillStyle = skyGrad;
-         skyCtx.fillRect(0, 0, 1024, 1024);
+          const skyGrad = skyCtx.createRadialGradient(768, 220, 30, 768, 220, 380);
+          skyGrad.addColorStop(0, '#f1f5f9');      // Soft silver-white center (softer moon core)
+          skyGrad.addColorStop(0.20, '#93c5fd');   // Soft sky blue
+          skyGrad.addColorStop(0.45, '#6d28d9');   // Rich violet-purple shade
+          skyGrad.addColorStop(0.70, '#1e3a8a');   // Royal blue
+          skyGrad.addColorStop(0.90, '#090514');   // Deep purple-black
+          skyGrad.addColorStop(1, '#010208');      // Midnight black background
+          
+          skyCtx.fillStyle = skyGrad;
+          skyCtx.fillRect(0, 0, 1024, 1024);
 
          // Apply high-frequency dither noise to eliminate color banding lines (shades)
          const skyImg = skyCtx.getImageData(0, 0, 1024, 1024);
@@ -80,35 +82,53 @@ export default function InteractiveWebGL() {
          skyCtx.putImageData(skyImg, 0, 0);
        }
        const skyTexture = new THREE.CanvasTexture(skyCanvas);
-       skyMat = new THREE.MeshBasicMaterial({
-         map: skyTexture,
-         depthWrite: false,
-         transparent: true,
-         opacity: 1.0
-       });
+        skyMat = new THREE.MeshBasicMaterial({
+          map: skyTexture,
+          depthWrite: false,
+          transparent: true,
+          opacity: 0.82,
+          fog: false
+        });
        skyMesh = new THREE.Mesh(skyGeo, skyMat);
        skyMesh.position.set(0, 0, -990);
        scene.add(skyMesh);
 
-       // Starry Night Sky (350 stars placed just in front of the sky glow)
-       const starCount = 350;
-       starGeo = new THREE.BufferGeometry();
-       const starPositions = new Float32Array(starCount * 3);
-       for (let i = 0; i < starCount; i++) {
-         starPositions[i * 3] = (Math.random() - 0.5) * 800; // X
-         starPositions[i * 3 + 1] = Math.random() * 400 + 40; // Y (high in sky)
-         starPositions[i * 3 + 2] = -980 - Math.random() * 10; // Z (between sky and moon)
-       }
-       starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-       starMat = new THREE.PointsMaterial({
-         color: 0xffffff,
-         size: 1.6,
-         transparent: true,
-         opacity: 0.75,
-         sizeAttenuation: true
-       });
-       stars = new THREE.Points(starGeo, starMat);
-       scene.add(stars);
+        // Starry Night Sky (800 stars of unequal sizes grouped for clean movement)
+        stars = new THREE.Group();
+        const starGeos = [];
+        const starMats = [];
+
+        const createStarLayer = (count, size, opacity) => {
+          const geo = new THREE.BufferGeometry();
+          const positions = new Float32Array(count * 3);
+          for (let i = 0; i < count; i++) {
+            positions[i * 3] = (Math.random() - 0.5) * 1600; // X
+            positions[i * 3 + 1] = Math.random() * 600 - 50; // Y
+            positions[i * 3 + 2] = -980 - Math.random() * 15; // Z
+          }
+          geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+          
+          const mat = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: size,
+            transparent: true,
+            opacity: opacity,
+            sizeAttenuation: true,
+            fog: false
+          });
+
+          const layer = new THREE.Points(geo, mat);
+          stars.add(layer);
+          starGeos.push(geo);
+          starMats.push(mat);
+        };
+
+        // Populate three layers of stars with unequal sizes
+        createStarLayer(550, 1.2, 0.70); // 1. Small distant stars
+        createStarLayer(200, 2.8, 0.85); // 2. Medium twinkling stars
+        createStarLayer(50, 4.8, 0.95);  // 3. Large, bright prominent stars
+
+        scene.add(stars);
 
        // Pale Moonlight Source (The Moon - Giant and Detailed)
        moonGeo = new THREE.SphereGeometry(95, 32, 32); // Increased to radius 95 for a massive, dramatic sky profile
@@ -157,7 +177,8 @@ export default function InteractiveWebGL() {
 
        const fallbackTexture = new THREE.CanvasTexture(moonCanvas);
        moonMat = new THREE.MeshBasicMaterial({
-         map: fallbackTexture
+         map: fallbackTexture,
+         fog: false
        });
 
        // Load high-resolution realistic moon map from GitHub remote asset in the background
@@ -212,9 +233,10 @@ export default function InteractiveWebGL() {
         glowMat = new THREE.MeshBasicMaterial({
           map: glowTexture,
           transparent: true,
-          opacity: 1.0,
+          opacity: 0.70,
           blending: THREE.AdditiveBlending,
-          depthWrite: false
+          depthWrite: false,
+          fog: false
         });
         
         moonGlowMesh = new THREE.Mesh(glowGeo, glowMat);
@@ -222,7 +244,7 @@ export default function InteractiveWebGL() {
         scene.add(moonGlowMesh);
 
        // --- 2.2 SCENE FOG ---
-       scene.fog = new THREE.FogExp2(0x030816, 0.0018);
+       scene.fog = new THREE.FogExp2(0x020617, 0.0018);
 
       // --- 2.3 ADD REALISTIC GLASS CUBE WITH INDENTED GLOWING GROOVES ---
       // Define unique drawing patterns for each of the 6 cube faces to look like an asymmetric tech core
@@ -323,31 +345,45 @@ export default function InteractiveWebGL() {
       const glassCube = new THREE.Mesh(glassGeo, materials);
       centralGroup.add(glassCube);
 
-      const isMobile = window.innerWidth < 768;
-
-      // Create multiple layered glowing spherical shells (aura) around the cube
-      // to mimic a sun corona/bloom effect.
-      const auraSizes = [11, 14, 18, 24];
-      const auraOpacities = isMobile ? [0.3, 0.2, 0.1, 0.03] : [0.65, 0.45, 0.22, 0.08];
-      const auraColors = [0x00d2ff, 0x008cff, 0x0044ff, 0x0011ff];
-
-      auraSizes.forEach((radius, index) => {
-        const aGeo = new THREE.SphereGeometry(radius, 32, 32);
-        const aMat = new THREE.MeshBasicMaterial({
-          color: auraColors[index],
-          transparent: true,
-          opacity: auraOpacities[index],
-          blending: THREE.AdditiveBlending,
-          side: THREE.BackSide,
-          depthWrite: false
-        });
-        const aMesh = new THREE.Mesh(aGeo, aMat);
-        centralGroup.add(aMesh);
+      // Single smooth, dithered 2D glow plane for the central cube's aura to eliminate lines of shades
+      const cubeGlowCanvas = document.createElement('canvas');
+      cubeGlowCanvas.width = 512;
+      cubeGlowCanvas.height = 512;
+      const cubeGlowCtx = cubeGlowCanvas.getContext('2d');
+      if (cubeGlowCtx) {
+        const grad = cubeGlowCtx.createRadialGradient(256, 256, 10, 256, 256, 256);
+        grad.addColorStop(0, 'rgba(0, 248, 255, 1.0)'); // Luminous neon cyan center
+        grad.addColorStop(0.2, 'rgba(0, 140, 255, 0.7)'); // Vibrant blue
+        grad.addColorStop(0.5, 'rgba(0, 68, 255, 0.25)'); // Indigo glow
+        grad.addColorStop(1.0, 'rgba(0, 0, 0, 0.0)');
         
-        auraGeos.push(aGeo);
-        auraMats.push(aMat);
-        auras.push({ mesh: aMesh, baseOpacity: auraOpacities[index], index });
+        cubeGlowCtx.fillStyle = grad;
+        cubeGlowCtx.fillRect(0, 0, 512, 512);
+
+        // Apply high-frequency dither noise to eliminate color banding lines
+        const imgData = cubeGlowCtx.getImageData(0, 0, 512, 512);
+        const d = imgData.data;
+        for (let i = 0; i < d.length; i += 4) {
+          const noise = (Math.random() - 0.5) * 4.5;
+          d[i] = Math.min(255, Math.max(0, d[i] + noise));
+          d[i+1] = Math.min(255, Math.max(0, d[i+1] + noise));
+          d[i+2] = Math.min(255, Math.max(0, d[i+2] + noise));
+        }
+        cubeGlowCtx.putImageData(imgData, 0, 0);
+      }
+
+      const cubeGlowTexture = new THREE.CanvasTexture(cubeGlowCanvas);
+      textures.push(cubeGlowTexture); // Auto-disposed with textures array
+      cubeGlowGeo = new THREE.PlaneGeometry(isMobile ? 32 : 55, isMobile ? 32 : 55);
+      cubeGlowMat = new THREE.MeshBasicMaterial({
+        map: cubeGlowTexture,
+        transparent: true,
+        opacity: 0.95,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
       });
+      cubeGlowMesh = new THREE.Mesh(cubeGlowGeo, cubeGlowMat);
+      scene.add(cubeGlowMesh);
 
       // Local PointLight inside the cube to reflect on the ocean surface waves below
       const cubeLight = new THREE.PointLight(0x00bfff, 45.0, 300); 
@@ -408,22 +444,22 @@ export default function InteractiveWebGL() {
 
       // Create organic, realistic dark mountain peaks with procedural ridge displacement
       // Using a narrower base (radius 90) and higher peak (height 360) to avoid center clipping
-      mountainGeo = new THREE.ConeGeometry(90, 360, 32, 32); // High-density grid for organic details
+      mountainGeo = new THREE.ConeGeometry(110, 600, 32, 32); // High-density taller grid to keep bases hidden deep below water level
       const mPos = mountainGeo.attributes.position;
       for (let i = 0; i < mPos.count; i++) {
         const x = mPos.getX(i);
         const y = mPos.getY(i);
         const z = mPos.getZ(i);
 
-        // Base is at y = -180, peak is at y = 180. Height ranges over 360 units.
-        const heightFactor = (y + 180) / 360; 
+        // Base is at y = -300, peak is at y = 300.
+        const heightFactor = (y + 300) / 600; 
 
         // Apply fractal noise displacement on the mountain body, leaving base and tip sharp
         if (heightFactor > 0.05 && heightFactor < 0.95) {
           const angle = Math.atan2(z, x);
-          const noise = Math.sin(angle * 5.0) * Math.cos(y * 0.08) * 16.0 + 
-                        Math.cos(angle * 12.0) * Math.sin(y * 0.15) * 8.0 + 
-                        Math.sin(angle * 2.0) * 10.0;
+          const noise = Math.sin(angle * 5.0) * Math.cos(y * 0.05) * 20.0 + 
+                        Math.cos(angle * 12.0) * Math.sin(y * 0.10) * 10.0 + 
+                        Math.sin(angle * 2.0) * 12.0;
 
           // Scale displacement so it tapers off towards the base and tip
           const scale = Math.sin(heightFactor * Math.PI);
@@ -443,81 +479,81 @@ export default function InteractiveWebGL() {
 
       // Left Peak: camera passes it on the left
       const m1 = new THREE.Mesh(mountainGeo, mountainMat);
-      m1.position.set(-150, 80, -680);
+      m1.position.set(-150, 20, -680);
       m1.scale.set(1.1, 1.1, 1.1);
       scene.add(m1);
       mountains.push(m1);
 
       // Right Peak: camera passes it on the right
       const m3 = new THREE.Mesh(mountainGeo, mountainMat);
-      m3.position.set(150, 60, -720);
+      m3.position.set(150, 10, -720);
       scene.add(m3);
       mountains.push(m3);
 
       // Center Peak: far background mountain to look at down the path
       const m2 = new THREE.Mesh(mountainGeo, mountainMat);
-      m2.position.set(0, 100, -960); 
+      m2.position.set(0, 40, -960); 
       m2.scale.set(1.5, 1.5, 1.5);
       scene.add(m2);
       mountains.push(m2);
 
       // Add 4 more flanking mountains for a dense canyon silhouette
       const m4 = new THREE.Mesh(mountainGeo, mountainMat);
-      m4.position.set(-280, 90, -950);
+      m4.position.set(-280, 30, -950);
       m4.scale.set(1.3, 1.3, 1.3);
       scene.add(m4);
       mountains.push(m4);
 
       const m5 = new THREE.Mesh(mountainGeo, mountainMat);
-      m5.position.set(280, 70, -940);
+      m5.position.set(280, 20, -940);
       m5.scale.set(1.2, 1.2, 1.2);
       scene.add(m5);
       mountains.push(m5);
 
       const m6 = new THREE.Mesh(mountainGeo, mountainMat);
-      m6.position.set(-160, 60, -820);
+      m6.position.set(-160, 10, -820);
       scene.add(m6);
       mountains.push(m6);
 
       const m7 = new THREE.Mesh(mountainGeo, mountainMat);
-      m7.position.set(160, 50, -850);
+      m7.position.set(160, 0, -850);
       m7.scale.set(0.95, 0.95, 0.95);
       scene.add(m7);
       mountains.push(m7);
 
       // Add 6 more sideways mountains flanking the river banks closer to the camera
       const m8 = new THREE.Mesh(mountainGeo, mountainMat);
-      m8.position.set(-135, 50, -380);
+      m8.position.set(-135, 0, -380);
       m8.scale.set(0.85, 0.85, 0.85);
       scene.add(m8);
       mountains.push(m8);
 
       const m9 = new THREE.Mesh(mountainGeo, mountainMat);
-      m9.position.set(135, 40, -420);
+      m9.position.set(135, -10, -420);
       m9.scale.set(0.8, 0.8, 0.8);
       scene.add(m9);
       mountains.push(m9);
 
       const m10 = new THREE.Mesh(mountainGeo, mountainMat);
-      m10.position.set(-145, 60, -540);
+      m10.position.set(-145, 10, -540);
       m10.scale.set(0.95, 0.95, 0.95);
       scene.add(m10);
       mountains.push(m10);
 
       const m11 = new THREE.Mesh(mountainGeo, mountainMat);
-      m11.position.set(145, 50, -560);
+      m11.position.set(145, 0, -560);
       m11.scale.set(0.9, 0.9, 0.9);
       scene.add(m11);
       mountains.push(m11);
 
       const m12 = new THREE.Mesh(mountainGeo, mountainMat);
-      m12.position.set(-120, 30, -250);
+      m12.position.set(-120, -20, -250);
       m12.scale.set(0.7, 0.7, 0.7);
       scene.add(m12);
       mountains.push(m12);
 
       const m13 = new THREE.Mesh(mountainGeo, mountainMat);
-      m13.position.set(120, 20, -280);
+      m13.position.set(120, -30, -280);
       m13.scale.set(0.65, 0.65, 0.65);
       scene.add(m13);
       mountains.push(m13);
@@ -670,8 +706,15 @@ export default function InteractiveWebGL() {
       window.addEventListener('scroll', handleScroll);
 
       // --- 4. RESPONSIVE WINDOW RESIZING ---
+      let lastWidth = window.innerWidth;
       const handleResize = () => {
         if (camera && renderer) {
+          // On mobile, ignore height-only resizes (caused by address bar showing/hiding)
+          // to prevent stretching, jumping, and unnecessary re-renders.
+          if (isMobile && window.innerWidth === lastWidth) {
+            return;
+          }
+          lastWidth = window.innerWidth;
           camera.aspect = window.innerWidth / window.innerHeight;
           camera.updateProjectionMatrix();
           renderer.setSize(window.innerWidth, window.innerHeight);
@@ -800,17 +843,13 @@ export default function InteractiveWebGL() {
           centralGroup.position.y = waterY + (isMobile ? 22.0 : 28.0); 
         }
 
-        // Pulse the glowing auras to make it feel alive and sun-like
-        auras.forEach(a => {
-          if (a.mesh && a.mesh.material) {
-            // Pulse opacity slightly
-            const pulse = Math.sin(elapsedTime * 1.5 + a.index) * 0.05;
-            a.mesh.material.opacity = Math.max(0.01, a.baseOpacity + pulse);
-            // Pulse scale slightly
-            const scalePulse = 1.0 + Math.sin(elapsedTime * 0.8 + a.index) * 0.03;
-            a.mesh.scale.set(scalePulse, scalePulse, scalePulse);
-          }
-        });
+        // Billboarding and organic pulsing for the central cube's seamless 2D glow
+        if (cubeGlowMesh && camera) {
+          cubeGlowMesh.position.copy(centralGroup.position);
+          cubeGlowMesh.quaternion.copy(camera.quaternion); // Face the camera
+          const pulse = Math.sin(elapsedTime * 1.5) * 0.03;
+          cubeGlowMesh.scale.set(1.0 + pulse, 1.0 + pulse, 1.0 + pulse);
+        }
 
         // Rotate secondary crystals
         if (crystal1 && crystal1.mesh) {
@@ -862,15 +901,21 @@ export default function InteractiveWebGL() {
           }
           const lookAtTargetY = -22.0 + waterfallBendAtLookAt + 12.0; // Point slightly higher to raise camera angle and make text clearly visible
           camera.lookAt(new THREE.Vector3(0, lookAtTargetY, lookAtTargetZ));
+
+          // Celestial Infinite Depth Sync: lock celestial elements to camera position to prevent parallax separation
+          if (stars) stars.position.set(camera.position.x, camera.position.y, camera.position.z);
+          if (skyMesh) skyMesh.position.set(camera.position.x, camera.position.y, camera.position.z - 990.0);
+          if (moon) moon.position.set(camera.position.x + 250, camera.position.y + 280, camera.position.z - 850.0);
+          if (moonGlowMesh) moonGlowMesh.position.set(camera.position.x + 250, camera.position.y + 280, camera.position.z - 851.0);
         }
 
         if (scene) {
           if (scene.fog) {
             scene.fog.density = fogDensity;
-            scene.fog.color.lerpColors(new THREE.Color(0x030816), new THREE.Color(0x000103), fallEase);
+            scene.fog.color.lerpColors(new THREE.Color(0x020617), new THREE.Color(0x000000), fallEase);
           }
           if (scene.background) {
-            scene.background.lerpColors(new THREE.Color(0x030816), new THREE.Color(0x000103), fallEase);
+            scene.background.lerpColors(new THREE.Color(0x020617), new THREE.Color(0x000000), fallEase);
           }
         }
 
@@ -913,6 +958,7 @@ export default function InteractiveWebGL() {
           if (moonGlowMesh) scene.remove(moonGlowMesh);
           if (stars) scene.remove(stars);
           if (skyMesh) scene.remove(skyMesh);
+          if (cubeGlowMesh) scene.remove(cubeGlowMesh);
           if (pillars) {
             pillars.forEach((p) => scene.remove(p));
           }
@@ -938,10 +984,18 @@ export default function InteractiveWebGL() {
         if (moonMat) moonMat.dispose();
         if (starGeo) starGeo.dispose();
         if (starMat) starMat.dispose();
+        if (starGeos) {
+          starGeos.forEach((geo) => geo.dispose());
+        }
+        if (starMats) {
+          starMats.forEach((mat) => mat.dispose());
+        }
         if (skyGeo) skyGeo.dispose();
         if (skyMat) skyMat.dispose();
         if (glowGeo) glowGeo.dispose();
         if (glowMat) glowMat.dispose();
+        if (cubeGlowGeo) cubeGlowGeo.dispose();
+        if (cubeGlowMat) cubeGlowMat.dispose();
         if (auraGeos) {
           auraGeos.forEach((geo) => geo.dispose());
         }
@@ -976,10 +1030,10 @@ export default function InteractiveWebGL() {
         position: 'fixed',
         top: 0,
         left: 0,
-        width: '100vw',
-        height: '100vh',
+        right: 0,
+        bottom: 0,
         zIndex: -1, // Keep behind content
-        background: 'radial-gradient(circle at 50% 70%, #00f0ff -20%, #05337c 35%, #010410 80%, #000000 100%)',
+        background: '#020617', // Solid night sky fill matching WebGL background
         pointerEvents: 'none'
       }}
     />
