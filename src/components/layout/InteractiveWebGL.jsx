@@ -550,7 +550,7 @@ export default function InteractiveWebGL() {
             const lookAtDist = lookAtTargetZ + 450.0;
             waterfallBendAtLookAt = lookAtDist * lookAtDist * -0.0018 * fallEase;
           }
-          const lookAtTargetY = -22.0 + waterfallBendAtLookAt - 25.0; // Point slightly below the water surface level in front
+          const lookAtTargetY = -22.0 + waterfallBendAtLookAt + 12.0; // Point slightly higher to raise camera angle and make text clearly visible
           camera.lookAt(new THREE.Vector3(0, lookAtTargetY, lookAtTargetZ));
         }
 
