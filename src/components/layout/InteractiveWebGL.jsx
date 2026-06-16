@@ -18,7 +18,7 @@ export default function InteractiveWebGL() {
     let pillars = [], pillarGeo, pillarMat;
     let mountains = [], mountainGeo, mountainMat;
     let lightBars = [], lightBarGeo, lightBarMat;
-    let moon, moonAuraGroup, stars, starGeo, starMat, moonGeo, moonMat, skyMesh, skyGeo, skyMat;
+    let moon, moonGlowMesh, glowGeo, glowMat, stars, starGeo, starMat, moonGeo, moonMat, skyMesh, skyGeo, skyMat;
 
     try {
        // --- 1. SETUP CORE SCENE ELEMENTS ---
@@ -166,25 +166,37 @@ export default function InteractiveWebGL() {
        moon.position.set(250, 280, -850); // Massive, placed high up in the canyon sky
        scene.add(moon);
 
-       // Layered Glowing Moon Aura (Spreads luminous moonlight across the night sky)
-       moonAuraGroup = new THREE.Group();
-       const moonAuraSizes = [110, 150, 210, 300]; // Scaled up to match massive moon
-       const moonAuraOpacities = [0.48, 0.26, 0.14, 0.05];
-       moonAuraSizes.forEach((r, idx) => {
-         const auraGeo = new THREE.SphereGeometry(r, 16, 16);
-         const auraMat = new THREE.MeshBasicMaterial({
-           color: 0xa5b4fc, // Soft blue-indigo moonlight
-           transparent: true,
-           opacity: moonAuraOpacities[idx],
-           blending: THREE.AdditiveBlending,
-           side: THREE.BackSide,
-           depthWrite: false
-         });
-         const auraMesh = new THREE.Mesh(auraGeo, auraMat);
-         moonAuraGroup.add(auraMesh);
-       });
-       moonAuraGroup.position.copy(moon.position);
-       scene.add(moonAuraGroup);
+        // Smooth Volumetric Moon Glow (Eliminates sphere banding, creates a seamless bright halo)
+        const glowCanvas = document.createElement('canvas');
+        glowCanvas.width = 512;
+        glowCanvas.height = 512;
+        const glowCtx = glowCanvas.getContext('2d');
+        if (glowCtx) {
+          const grad = glowCtx.createRadialGradient(256, 256, 10, 256, 256, 256);
+          // Highly luminous center, fading very smoothly
+          grad.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
+          grad.addColorStop(0.18, 'rgba(199, 210, 254, 0.9)');
+          grad.addColorStop(0.42, 'rgba(90, 110, 190, 0.45)');
+          grad.addColorStop(0.72, 'rgba(30, 40, 85, 0.15)');
+          grad.addColorStop(1.0, 'rgba(0, 0, 0, 0.0)');
+          
+          glowCtx.fillStyle = grad;
+          glowCtx.fillRect(0, 0, 512, 512);
+        }
+        
+        const glowTexture = new THREE.CanvasTexture(glowCanvas);
+        glowGeo = new THREE.PlaneGeometry(620, 620); // Large glow covering the sky
+        glowMat = new THREE.MeshBasicMaterial({
+          map: glowTexture,
+          transparent: true,
+          opacity: 1.0,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+        
+        moonGlowMesh = new THREE.Mesh(glowGeo, glowMat);
+        moonGlowMesh.position.set(250, 280, -851); // Positioned exactly behind the moon mesh (Z = -850)
+        scene.add(moonGlowMesh);
 
        // --- 2.2 SCENE FOG ---
        scene.fog = new THREE.FogExp2(0x030816, 0.0018);
@@ -875,7 +887,7 @@ export default function InteractiveWebGL() {
           if (oceanParticles) scene.remove(oceanParticles);
           if (lightTarget) scene.remove(lightTarget);
           if (moon) scene.remove(moon);
-          if (moonAuraGroup) scene.remove(moonAuraGroup);
+          if (moonGlowMesh) scene.remove(moonGlowMesh);
           if (stars) scene.remove(stars);
           if (skyMesh) scene.remove(skyMesh);
           if (pillars) {
@@ -905,6 +917,8 @@ export default function InteractiveWebGL() {
         if (starMat) starMat.dispose();
         if (skyGeo) skyGeo.dispose();
         if (skyMat) skyMat.dispose();
+        if (glowGeo) glowGeo.dispose();
+        if (glowMat) glowMat.dispose();
         if (auraGeos) {
           auraGeos.forEach((geo) => geo.dispose());
         }
