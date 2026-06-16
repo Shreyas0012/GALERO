@@ -66,6 +66,18 @@ export default function InteractiveWebGL() {
          
          skyCtx.fillStyle = skyGrad;
          skyCtx.fillRect(0, 0, 1024, 1024);
+
+         // Apply high-frequency dither noise to eliminate color banding lines (shades)
+         const skyImg = skyCtx.getImageData(0, 0, 1024, 1024);
+         const d = skyImg.data;
+         for (let i = 0; i < d.length; i += 4) {
+           // Tiny high-frequency noise offset to break 8-bit color banding
+           const noise = (Math.random() - 0.5) * 4.2; 
+           d[i] = Math.min(255, Math.max(0, d[i] + noise));
+           d[i+1] = Math.min(255, Math.max(0, d[i+1] + noise));
+           d[i+2] = Math.min(255, Math.max(0, d[i+2] + noise));
+         }
+         skyCtx.putImageData(skyImg, 0, 0);
        }
        const skyTexture = new THREE.CanvasTexture(skyCanvas);
        skyMat = new THREE.MeshBasicMaterial({
@@ -182,6 +194,17 @@ export default function InteractiveWebGL() {
           
           glowCtx.fillStyle = grad;
           glowCtx.fillRect(0, 0, 512, 512);
+
+          // Apply high-frequency dither noise to eliminate glow banding lines (shades)
+          const glowImg = glowCtx.getImageData(0, 0, 512, 512);
+          const gd = glowImg.data;
+          for (let i = 0; i < gd.length; i += 4) {
+            const noise = (Math.random() - 0.5) * 4.5;
+            gd[i] = Math.min(255, Math.max(0, gd[i] + noise));
+            gd[i+1] = Math.min(255, Math.max(0, gd[i+1] + noise));
+            gd[i+2] = Math.min(255, Math.max(0, gd[i+2] + noise));
+          }
+          glowCtx.putImageData(glowImg, 0, 0);
         }
         
         const glowTexture = new THREE.CanvasTexture(glowCanvas);
