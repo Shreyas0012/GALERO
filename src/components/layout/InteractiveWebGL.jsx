@@ -40,7 +40,7 @@ export default function InteractiveWebGL() {
       scene.add(ambientLight);
 
        const sunLight = new THREE.DirectionalLight(0xa5b4fc, 1.8); // strong moonlight from distance
-       sunLight.position.set(160, 180, -850); // Aligned exactly with the moon's position
+       sunLight.position.set(220, 240, -850); // Aligned exactly with the large moon's position
        scene.add(sunLight);
  
        // Cyan rim light placed behind the mountains to trace their ridges in neon blue glow
@@ -69,19 +69,78 @@ export default function InteractiveWebGL() {
        stars = new THREE.Points(starGeo, starMat);
        scene.add(stars);
 
-       // Pale Moonlight Source (The Moon)
-       moonGeo = new THREE.SphereGeometry(18, 32, 32);
+       // Pale Moonlight Source (The Moon - Large and Luminous)
+       moonGeo = new THREE.SphereGeometry(45, 32, 32); // Increased to radius 45 for a massive, dramatic presence
+       
+       // High-quality procedural fallback texture map
+       const moonCanvas = document.createElement('canvas');
+       moonCanvas.width = 512;
+       moonCanvas.height = 512;
+       const moonCtx = moonCanvas.getContext('2d');
+       if (moonCtx) {
+         // Spherical shading base gradient
+         const grad = moonCtx.createRadialGradient(256, 256, 120, 256, 256, 256);
+         grad.addColorStop(0, '#ffffff'); 
+         grad.addColorStop(0.85, '#e2e5ec'); 
+         grad.addColorStop(1, '#a1a8b8'); 
+         moonCtx.fillStyle = grad;
+         moonCtx.fillRect(0, 0, 512, 512);
+
+         // Maria spots (dark geological patches)
+         moonCtx.fillStyle = 'rgba(110, 115, 128, 0.15)';
+         for (let i = 0; i < 15; i++) {
+           moonCtx.beginPath();
+           moonCtx.arc(Math.random() * 512, Math.random() * 512, Math.random() * 80 + 30, 0, Math.PI * 2);
+           moonCtx.fill();
+         }
+
+         // Crater outlines
+         for (let i = 0; i < 25; i++) {
+           const cx = Math.random() * 512;
+           const cy = Math.random() * 512;
+           const cr = Math.random() * 12 + 3;
+
+           moonCtx.strokeStyle = 'rgba(80, 85, 95, 0.3)';
+           moonCtx.lineWidth = cr * 0.12;
+           moonCtx.beginPath();
+           moonCtx.arc(cx, cy, cr, Math.PI * 0.25, Math.PI * 1.25);
+           moonCtx.stroke();
+
+           moonCtx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+           moonCtx.lineWidth = cr * 0.12;
+           moonCtx.beginPath();
+           moonCtx.arc(cx, cy, cr, Math.PI * 1.25, Math.PI * 0.25);
+           moonCtx.stroke();
+         }
+       }
+
+       const fallbackTexture = new THREE.CanvasTexture(moonCanvas);
        moonMat = new THREE.MeshBasicMaterial({
-         color: 0xf5f7ff // Pale silver-white moon surface
+         map: fallbackTexture
        });
+
+       // Load high-resolution realistic moon map from GitHub remote asset in the background
+       const texLoader = new THREE.TextureLoader();
+       texLoader.load(
+         'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/moon_1024.jpg',
+         (loadedTexture) => {
+           if (moonMat) {
+             moonMat.map = loadedTexture;
+             moonMat.needsUpdate = true;
+           }
+         },
+         undefined,
+         (err) => console.log('Using procedural moon texture fallback')
+       );
+
        moon = new THREE.Mesh(moonGeo, moonMat);
-       moon.position.set(160, 180, -850); // Placed high up, flanking the canyon
+       moon.position.set(220, 240, -850); // Massive, placed high up in the canyon sky
        scene.add(moon);
 
-       // Layered Glowing Moon Aura (Spreads moonlight across the night sky)
+       // Layered Glowing Moon Aura (Spreads luminous moonlight across the night sky)
        moonAuraGroup = new THREE.Group();
-       const moonAuraSizes = [22, 36, 56, 85];
-       const moonAuraOpacities = [0.42, 0.24, 0.12, 0.04];
+       const moonAuraSizes = [56, 85, 120, 180]; // Scaled up to match large moon
+       const moonAuraOpacities = [0.45, 0.25, 0.12, 0.04];
        moonAuraSizes.forEach((r, idx) => {
          const auraGeo = new THREE.SphereGeometry(r, 16, 16);
          const auraMat = new THREE.MeshBasicMaterial({
