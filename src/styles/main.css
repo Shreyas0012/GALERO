@@ -13,10 +13,16 @@
 }
 
 html,
-body {
-  min-height: 100%;
+body,
+#root {
   width: 100%;
+  min-height: 100%;
   overflow-x: hidden;
+  background: #000;
+}
+
+html,
+body {
   overscroll-behavior-y: none; /* Prevent elastic bounce/stretching on mobile scroll */
   font-family: var(--font-sans);
   background-color: var(--bg-primary);
@@ -37,9 +43,32 @@ body::-webkit-scrollbar {
 }
 
 #root {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
+}
+
+/* Mobile full-screen layout helpers */
+.hero {
+  min-height: 100dvh;
+  position: relative;
+  overflow: hidden;
+}
+
+.background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+@media (max-width: 768px) {
+  .background {
+    background-attachment: scroll;
+  }
 }
 
 main {
