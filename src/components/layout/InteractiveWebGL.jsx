@@ -226,12 +226,38 @@ export default function InteractiveWebGL() {
         pillars.push(pRight);
       }
 
-      // Create a stationary dark mountain range silhouette
-      // We position two massive peaks flanking the descent path so the camera flies right between them
-      mountainGeo = new THREE.ConeGeometry(180, 320, 4); // Larger peaks for dramatic framing
-      mountainMat = new THREE.MeshBasicMaterial({
-        color: 0x000103, // Ominous near-black
-        flatShading: true
+      // Create organic, realistic dark mountain peaks with procedural ridge displacement
+      mountainGeo = new THREE.ConeGeometry(180, 320, 32, 32); // High-density grid for organic details
+      const mPos = mountainGeo.attributes.position;
+      for (let i = 0; i < mPos.count; i++) {
+        const x = mPos.getX(i);
+        const y = mPos.getY(i);
+        const z = mPos.getZ(i);
+
+        // Base is at y = -160, peak is at y = 160. Height ranges over 320 units.
+        const heightFactor = (y + 160) / 320; 
+
+        // Apply fractal noise displacement on the mountain body, leaving base and tip sharp
+        if (heightFactor > 0.05 && heightFactor < 0.95) {
+          const angle = Math.atan2(z, x);
+          const noise = Math.sin(angle * 5.0) * Math.cos(y * 0.08) * 22.0 + 
+                        Math.cos(angle * 12.0) * Math.sin(y * 0.15) * 10.0 + 
+                        Math.sin(angle * 2.0) * 14.0;
+
+          // Scale displacement so it tapers off towards the base and tip
+          const scale = Math.sin(heightFactor * Math.PI);
+          
+          mPos.setX(i, x + Math.cos(angle) * noise * scale * 0.85);
+          mPos.setZ(i, z + Math.sin(angle) * noise * scale * 0.85);
+        }
+      }
+      mountainGeo.computeVertexNormals();
+
+      mountainMat = new THREE.MeshStandardMaterial({
+        color: 0x010307,      // Ominous matte black-indigo rock
+        roughness: 0.85,      // Rough rock texture
+        metalness: 0.15,
+        flatShading: true     // Faceted rock cliffs
       });
 
       // Left Peak: camera passes it on the left
