@@ -52,7 +52,11 @@ export default function Navbar() {
             >
               {menuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
+            <Link to="/" className="navbar-logo">
+              Galero
+            </Link>
           </div>
+
 
           {/* Center: desktop nav links (Clean text list matching Hubtown) */}
           <nav className="navbar-links">

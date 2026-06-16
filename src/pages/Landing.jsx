@@ -12,37 +12,10 @@ export default function Landing() {
       {/* Dynamic Grid Background overlay */}
       <div className="hud-grid" style={{ position: 'fixed', zIndex: 1 }} />
 
-      {/* Floating coordinates and project info (fixed to screen overlay) */}
-      <motion.div
-        className="fixed top-8 left-8 z-50 mix-blend-difference"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 2, delay: 0.5 }}
-      >
-        <div
-          className="text-3xl text-white tracking-widest"
-          style={{
-            fontFamily: "'Playfair Display', Didot, 'Bodoni MT', 'Times New Roman', serif",
-            fontStyle: 'italic',
-            fontWeight: 300
-          }}
-        >
-          Galero
-        </div>
-      </motion.div>
+
 
       <motion.div
-        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 mix-blend-difference"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 2, delay: 0.8 }}
-      >
-        <div className="text-[10px] uppercase tracking-[0.3em] text-white/50 mb-1 text-center">Project</div>
-        <div className="text-xs uppercase tracking-widest text-white text-center">Galero</div>
-      </motion.div>
-
-      <motion.div
-        className="fixed bottom-8 left-8 z-50 mix-blend-difference"
+        className="hidden md:block fixed bottom-8 left-8 z-50 mix-blend-difference"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 2, delay: 0.8 }}
@@ -66,7 +39,7 @@ export default function Landing() {
             animate={{ opacity: 1, filter: 'blur(0px)' }}
             transition={{ duration: 3, delay: 0.3, ease: 'easeOut' }}
           >
-            <h1 className="text-[8vw] leading-none font-display text-white tracking-tighter mix-blend-overlay opacity-90">
+            <h1 className="text-[11vw] sm:text-6xl md:text-[8vw] leading-none font-display text-white tracking-tighter mix-blend-overlay opacity-90 landing-title">
               FROZEN
               <br />
               PROVENANCE

@@ -147,7 +147,7 @@ export default function Explore() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 3, delay: 2 }}
-          className="fixed top-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-xs opacity-30 hover:opacity-100 transition-opacity duration-700"
+          className="relative md:fixed md:top-24 md:left-1/2 md:-translate-x-1/2 z-40 w-full max-w-xs mx-auto opacity-70 md:opacity-30 hover:opacity-100 transition-opacity duration-700 mt-6 md:mt-0"
         >
           <div className="flex items-center border-b border-white/20 pb-2">
             <input

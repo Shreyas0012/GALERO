@@ -13,6 +13,10 @@ export default function InteractiveWebGL() {
     let crystal1, crystal2, floorGeo, floorMat, floorGrid;
     let particleGeo, particleMat, oceanParticles;
     let lightTarget;
+    let auraGeos = [], auraMats = [], auras = [];
+    let flowOffset = 0;
+    let pillars = [], pillarGeo, pillarMat;
+    let mountains = [], mountainGeo, mountainMat;
 
     try {
       // --- 1. SETUP CORE SCENE ELEMENTS ---
@@ -101,11 +105,11 @@ export default function InteractiveWebGL() {
         const faceCtx = faceCanvas.getContext('2d');
         
         if (faceCtx) {
-          faceCtx.fillStyle = '#000000'; // Base non-emission
+          faceCtx.fillStyle = '#ffffff'; // White base (full emission/glow)
           faceCtx.fillRect(0, 0, 512, 512);
           
-          // Draw bright glow outlines/panel divisions
-          faceCtx.strokeStyle = '#ffffff';
+          // Draw dark lines (non-emission/black grooves)
+          faceCtx.strokeStyle = '#000000';
           faceCtx.lineWidth = 14;
           faceCtx.strokeRect(10, 10, 492, 492); // Outer borders
           
@@ -117,21 +121,19 @@ export default function InteractiveWebGL() {
         textures.push(tex);
 
         const mat = new THREE.MeshPhysicalMaterial({
-          color: 0x0099ff,            // Cyan-blue glass base
-          emissive: 0x00d2ff,         // Vibrant electric cyan emission
-          emissiveMap: tex,
-          emissiveIntensity: 3.8,     // Saturated glow
-          roughness: 0.12,            // Glossy, slightly rough glass surface
+          color: 0x0044ff,            // Deep cobalt blue
+          emissive: 0x0099ff,         // Vibrant blue glow color
+          emissiveMap: tex,           // Tells it to glow where the canvas is white
+          emissiveIntensity: 6.5,     // Strong glow
+          roughness: 0.1,             
           metalness: 0.1,
-          transmission: 0.9,          // Refractive glass light transmission
-          ior: 1.55,                  // Refractive index of glass
-          thickness: 4.5,             // Thickness of refraction
-          bumpMap: tex,               // Physically indent the grooves
-          bumpScale: -0.06,           // Negative scale indents the lines inward
-          clearcoat: 1.0,             // Clean outer lacquer layer
-          clearcoatRoughness: 0.08,
-          transparent: true,
-          opacity: 0.96
+          transmission: 0.0,          // Not transparent
+          transparent: false,         // Fully solid
+          opacity: 1.0,
+          bumpMap: tex,               // Keep the detailed tech grooves
+          bumpScale: 0.06,            // Positive bump scale indents the dark lines
+          clearcoat: 1.0,             
+          clearcoatRoughness: 0.08
         });
         materials.push(mat);
       });
@@ -140,12 +142,41 @@ export default function InteractiveWebGL() {
       const glassCube = new THREE.Mesh(glassGeo, materials);
       centralGroup.add(glassCube);
 
+      const isMobile = window.innerWidth < 768;
+
+      // Create multiple layered glowing spherical shells (aura) around the cube
+      // to mimic a sun corona/bloom effect.
+      const auraSizes = [11, 14, 18, 24];
+      const auraOpacities = isMobile ? [0.3, 0.2, 0.1, 0.03] : [0.65, 0.45, 0.22, 0.08];
+      const auraColors = [0x00d2ff, 0x008cff, 0x0044ff, 0x0011ff];
+
+      auraSizes.forEach((radius, index) => {
+        const aGeo = new THREE.SphereGeometry(radius, 32, 32);
+        const aMat = new THREE.MeshBasicMaterial({
+          color: auraColors[index],
+          transparent: true,
+          opacity: auraOpacities[index],
+          blending: THREE.AdditiveBlending,
+          side: THREE.BackSide,
+          depthWrite: false
+        });
+        const aMesh = new THREE.Mesh(aGeo, aMat);
+        centralGroup.add(aMesh);
+        
+        auraGeos.push(aGeo);
+        auraMats.push(aMat);
+        auras.push({ mesh: aMesh, baseOpacity: auraOpacities[index], index });
+      });
+
       // Local PointLight inside the cube to reflect on the ocean surface waves below
-      const cubeLight = new THREE.PointLight(0x00c2ff, 25.0, 250); 
+      const cubeLight = new THREE.PointLight(0x00bfff, 45.0, 300); 
       cubeLight.position.set(0, -6, 0);
       centralGroup.add(cubeLight);
 
       // Position it directly on the surface of the ocean
+      if (isMobile) {
+        centralGroup.scale.set(0.5, 0.5, 0.5);
+      }
       centralGroup.position.set(0, -10, -180);
       scene.add(centralGroup);
 
@@ -168,15 +199,68 @@ export default function InteractiveWebGL() {
       crystal1 = createCrystal(5, 22, -10, -420, 0x818cf8);
       crystal2 = createCrystal(4, -20, 8, -650, 0x38bdf8);
 
+      // Create stationary glowing guide pillars along the margins to serve as absolute Y references
+      // as the camera and water plunge down the waterfall.
+      pillarGeo = new THREE.CylinderGeometry(0.1, 1.5, 75, 4); // Tall, tapered obelisks
+      pillarMat = new THREE.MeshBasicMaterial({
+        color: 0x0099ff,
+        transparent: true,
+        opacity: 0.35,
+        wireframe: true
+      });
+
+      for (let i = 0; i < 6; i++) {
+        const zPos = -150 - i * 150; // Spaced out along Z
+        
+        // Left side pillar
+        const pLeft = new THREE.Mesh(pillarGeo, pillarMat);
+        pLeft.position.set(-65, 0, zPos);
+        scene.add(pLeft);
+        pillars.push(pLeft);
+
+        // Right side pillar
+        const pRight = new THREE.Mesh(pillarGeo, pillarMat);
+        pRight.position.set(65, 0, zPos);
+        scene.add(pRight);
+        pillars.push(pRight);
+      }
+
+      // Create a stationary dark mountain range silhouette at a distance (Z = -950)
+      // to serve as a visual background height reference.
+      mountainGeo = new THREE.ConeGeometry(140, 260, 4); // Low-poly tapered pyramids
+      mountainMat = new THREE.MeshBasicMaterial({
+        color: 0x010307, // Very dark near-black indigo
+        flatShading: true
+      });
+
+      // Spawn three overlapping background mountains
+      const m1 = new THREE.Mesh(mountainGeo, mountainMat);
+      m1.position.set(-180, 40, -960);
+      scene.add(m1);
+      mountains.push(m1);
+
+      const m2 = new THREE.Mesh(mountainGeo, mountainMat);
+      m2.position.set(0, 70, -980); // Center highest peak
+      m2.scale.set(1.2, 1.2, 1.2);
+      scene.add(m2);
+      mountains.push(m2);
+
+      const m3 = new THREE.Mesh(mountainGeo, mountainMat);
+      m3.position.set(180, 30, -950);
+      scene.add(m3);
+      mountains.push(m3);
+
       // --- 2.4 REALISTIC WAVING OCEAN (Spread wider to 1000 units for ultra-wide support) ---
       const floorWidth = 1000;
       const floorHeight = 1200;
       floorGeo = new THREE.PlaneGeometry(floorWidth, floorHeight, 180, 220); // High-density grid for silky-smooth waves
-      floorMat = new THREE.MeshStandardMaterial({
+      floorMat = new THREE.MeshPhysicalMaterial({
         color: 0x000511, // Deep black-indigo ocean
-        roughness: 0.22, // Spreads out the light reflection paths wider (glossy/wet)
-        metalness: 0.8,  // Highly reflective metallic response
-        flatShading: false // Smooth wave transitions
+        roughness: 0.12, // Slick, glossy surface
+        metalness: 0.95, // Highly reflective response
+        clearcoat: 1.0,  // Glossy clearcoat layer to simulate water wetness
+        clearcoatRoughness: 0.08,
+        flatShading: false
       });
       floorGrid = new THREE.Mesh(floorGeo, floorMat);
       floorGrid.rotation.x = -Math.PI / 2;
@@ -221,10 +305,14 @@ export default function InteractiveWebGL() {
       particleMat = new THREE.ShaderMaterial({
         uniforms: {
           u_time: { value: 0 },
+          u_flowOffset: { value: 0 },
+          u_fallEase: { value: 0 },
           u_color: { value: new THREE.Color(0x00f8ff) } 
         },
         vertexShader: `
           uniform float u_time;
+          uniform float u_flowOffset;
+          uniform float u_fallEase;
           attribute vec3 randomData;
           varying float vOpacity;
           
@@ -233,12 +321,22 @@ export default function InteractiveWebGL() {
             float time = u_time * 1.5;
             float phase = randomData.x;
             
+            // Downstream flowing coordinate
+            float zFlow = pos.z + u_flowOffset;
+            
             // Wave heights mapping
-            float swell = sin(pos.x * 0.02 + time * 0.4) * 3.2 + cos(pos.z * 0.015 + time * 0.3) * 3.2;
-            float choppy = sin(pos.x * 0.08 - time * 1.2) * 1.0 + cos(pos.z * 0.06 + time * 1.0) * 1.0;
+            float swell = sin(pos.x * 0.02 + time * 0.4) * 3.2 + cos(zFlow * 0.015 + time * 0.3) * 3.2;
+            float choppy = sin(pos.x * 0.08 - time * 1.2) * 1.0 + cos(zFlow * 0.06 + time * 1.0) * 1.0;
             float ripple = sin(pos.x * 0.22 + time * 2.2) * 0.25;
             
-            pos.y += (swell + choppy + ripple) + randomData.y * 0.5; // Hover on wave surface
+            // Waterfall bend: bend particles down dynamically based on fall ease factor
+            float waterfallBend = 0.0;
+            if (pos.z < -450.0) {
+              float dist = pos.z + 450.0;
+              waterfallBend = dist * dist * -0.0018 * u_fallEase;
+            }
+            
+            pos.y += (swell + choppy + ripple) + randomData.y * 0.5 + waterfallBend;
             
             vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
             gl_Position = projectionMatrix * mvPosition;
@@ -266,6 +364,8 @@ export default function InteractiveWebGL() {
       scene.add(oceanParticles);
 
       // --- 3. SCROLL HANDLING & INTERACTION ---
+      let targetScrollPercent = 0;
+      let currentScrollPercent = 0;
       let targetScrollZ = 0;
       let currentScrollZ = 0;
 
@@ -274,8 +374,8 @@ export default function InteractiveWebGL() {
 
       const handleScroll = () => {
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPercent = window.scrollY / (maxScroll || 1);
-        targetScrollZ = scrollPercent * maxGalaxyDepth;
+        targetScrollPercent = window.scrollY / (maxScroll || 1);
+        targetScrollZ = targetScrollPercent * maxGalaxyDepth;
       };
       window.addEventListener('scroll', handleScroll);
 
@@ -297,33 +397,130 @@ export default function InteractiveWebGL() {
         
         const elapsedTime = clock.getElapsedTime();
 
-        // Ripple the floor grid vertices dynamically
-        const posAttribute = floorGeo.attributes.position;
-        const time = elapsedTime * 1.5;
-        for (let i = 0; i < posAttribute.count; i++) {
-          const x = posAttribute.getX(i);
-          const y = posAttribute.getY(i);
-          
-          const swell = Math.sin(x * 0.02 + time * 0.4) * 3.2 + Math.cos(y * 0.015 + time * 0.3) * 3.2;
-          const choppy = Math.sin(x * 0.08 - time * 1.2) * 1.0 + Math.cos(y * 0.06 + time * 1.0) * 1.0;
-          const ripple = Math.sin(x * 0.22 + time * 2.2) * 0.25;
+        // Linear Interpolation (Lerp) for smooth scroll percentages
+        currentScrollPercent += (targetScrollPercent - currentScrollPercent) * 0.03;
 
-          posAttribute.setZ(i, swell + choppy + ripple);
+        // Two-phase camera control based on remapped scroll progress:
+        const progress = currentScrollPercent;
+        let dropProgress = 0.0;
+        let cameraZ = 0.0;
+        let cameraY = 0.0;
+        let shake = 0.0;
+        let fovOffset = 0.0;
+        let fogDensity = 0.0018;
+
+        if (progress < 0.5) {
+          // Phase 1: Intro phase (0% to 50% scroll) - stable centered camera, subtle forward Z drift
+          cameraZ = (progress / 0.5) * -180.0; // Subtle Z drift
+          cameraY = Math.sin(elapsedTime * 0.35) * 0.4; // Organic floating drift
+        } else {
+          // Phase 2: Descent phase (50% to 100% scroll) - fall down the waterfall
+          dropProgress = (progress - 0.5) / 0.5;
+          const dropEase = Math.pow(dropProgress, 2.5); // Ease-in plunge
+
+          cameraZ = -180.0 - (dropEase * 620.0); // Smooth Z translation forward
+          
+          // Calculate camera Y height dynamically based on the water physical bend curve at cameraZ
+          let waterfallBendAtCamera = 0.0;
+          if (cameraZ < -450.0) {
+            const camDist = cameraZ + 450.0;
+            waterfallBendAtCamera = camDist * camDist * -0.0018; // Physically aligned descent
+          }
+          cameraY = waterfallBendAtCamera;
+
+          // Camera shake at the beginning of the fall (decaying after 25% of descent)
+          if (dropProgress < 0.25) {
+            const shakeFactor = Math.max(0, 1.0 - (dropProgress / 0.25));
+            shake = Math.sin(elapsedTime * 48.0) * 0.38 * shakeFactor;
+          }
+
+          // Widen FOV by up to 14 degrees for speed immersion
+          fovOffset = dropEase * 14.0;
+
+          // Increase fog density for volumetric depth in the canyon
+          fogDensity = 0.0018 + (dropEase * 0.0032);
         }
-        floorGeo.computeVertexNormals();
-        posAttribute.needsUpdate = true;
+
+        const fallEase = Math.pow(dropProgress, 2.5);
+
+        // Dynamic downstream current flow: pick up speed as we plunge
+        const baseFlowSpeed = 12.0;
+        const flowSpeed = baseFlowSpeed + (fallEase * 85.0); // accelerates up to ~100 units/sec!
+        flowOffset += 0.016 * flowSpeed; // integrate flow offset over time (approx 60fps)
 
         // Update shader uniforms
         if (particleMat) {
           particleMat.uniforms.u_time.value = elapsedTime;
+          particleMat.uniforms.u_flowOffset.value = flowOffset;
+          particleMat.uniforms.u_fallEase.value = fallEase;
         }
 
-        // Rotate and float the central cube slightly on the ocean surface waves
+        // Ripple the floor grid vertices dynamically + apply downstream flow and waterfall bend
+        const posAttribute = floorGeo.attributes.position;
+        const time = elapsedTime * 1.5;
+        for (let i = 0; i < posAttribute.count; i++) {
+          const x = posAttribute.getX(i);
+          const y = posAttribute.getY(i); // represents Z in world space
+          
+          // Downstream flowing coordinate
+          const flowY = y + flowOffset;
+          
+          // Wave heights mapping
+          const swell = Math.sin(x * 0.02 + time * 0.4) * 3.2 + Math.cos(flowY * 0.015 + time * 0.3) * 3.2;
+          const choppy = Math.sin(x * 0.08 - time * 1.2) * 1.0 + Math.cos(flowY * 0.06 + time * 1.0) * 1.0;
+          const ripple = Math.sin(x * 0.22 + time * 2.2) * 0.25;
+
+          // Waterfall bend: bend grid down dynamically based on scroll fallEase starting at Z = -450 (y = 50 in local coordinates)
+          let waterfallBend = 0.0;
+          if (y < 50.0) {
+            const dist = y - 50.0;
+            waterfallBend = dist * dist * -0.0018 * fallEase; // bend downwards in Z (world height)
+          }
+
+          posAttribute.setZ(i, swell + choppy + ripple + waterfallBend);
+        }
+        floorGeo.computeVertexNormals();
+        posAttribute.needsUpdate = true;
+
+        // Keep the base positions of floor grid and particles stationary (upstream river stays high)
+        if (floorGrid) {
+          floorGrid.position.y = -22.0;
+        }
+        if (oceanParticles) {
+          oceanParticles.position.y = 0.0;
+        }
+        if (lightTarget) {
+          lightTarget.position.y = -22.0;
+        }
+
+        // Calculate exact wave height at the center (X = 0, Z = -180) to float the cube on
+        const swellCenter = Math.sin(time * 0.4) * 3.2 + Math.cos((320 + flowOffset) * 0.015 + time * 0.3) * 3.2;
+        const choppyCenter = Math.sin(-time * 1.2) * 1.0 + Math.cos((320 + flowOffset) * 0.06 + time * 1.0) * 1.0;
+        const rippleCenter = Math.sin(time * 2.2) * 0.25;
+        const localWaveHeight = swellCenter + choppyCenter + rippleCenter;
+        
+        // Read dynamic floor grid position
+        const waterY = (floorGrid ? floorGrid.position.y : -22.0) + localWaveHeight;
+
+        // Rotate and float the central cube dynamically on the actual water wave height
         if (centralGroup) {
           centralGroup.rotation.y = elapsedTime * 0.15;
           centralGroup.rotation.x = elapsedTime * 0.08;
-          centralGroup.position.y = -10 + Math.sin(elapsedTime * 0.6) * 0.8;
+          // Levitating cleanly above the wave peaks so it never clips or immerses in the water
+          centralGroup.position.y = waterY + (isMobile ? 22.0 : 28.0); 
         }
+
+        // Pulse the glowing auras to make it feel alive and sun-like
+        auras.forEach(a => {
+          if (a.mesh && a.mesh.material) {
+            // Pulse opacity slightly
+            const pulse = Math.sin(elapsedTime * 1.5 + a.index) * 0.05;
+            a.mesh.material.opacity = Math.max(0.01, a.baseOpacity + pulse);
+            // Pulse scale slightly
+            const scalePulse = 1.0 + Math.sin(elapsedTime * 0.8 + a.index) * 0.03;
+            a.mesh.scale.set(scalePulse, scalePulse, scalePulse);
+          }
+        });
 
         // Rotate secondary crystals
         if (crystal1 && crystal1.mesh) {
@@ -336,10 +533,29 @@ export default function InteractiveWebGL() {
           crystal2.mesh.position.y = 8 + Math.cos(elapsedTime * 0.6) * 0.5;
         }
 
-        // Linear Interpolation (Lerp) for smooth camera glide physics
-        currentScrollZ += (targetScrollZ - currentScrollZ) * 0.03;
+        // Apply smooth camera glide physics (Z translation + vertical waterfall plunge)
         if (camera) {
-          camera.position.z = currentScrollZ;
+          camera.position.z = cameraZ;
+          camera.position.y = cameraY;
+          camera.position.x = shake;
+
+          // Apply dynamic FOV widening
+          camera.fov = 60 + fovOffset;
+          camera.updateProjectionMatrix();
+
+          // Camera looks down/forward along the descent path
+          const lookAtTargetZ = cameraZ - 200.0;
+          let waterfallBendAtLookAt = 0.0;
+          if (lookAtTargetZ < -450.0) {
+            const lookAtDist = lookAtTargetZ + 450.0;
+            waterfallBendAtLookAt = lookAtDist * lookAtDist * -0.0018 * fallEase;
+          }
+          const lookAtTargetY = -22.0 + waterfallBendAtLookAt - 25.0; // Point slightly below the water surface level in front
+          camera.lookAt(new THREE.Vector3(0, lookAtTargetY, lookAtTargetZ));
+        }
+
+        if (scene && scene.fog) {
+          scene.fog.density = fogDensity;
         }
 
         if (renderer && scene && camera) {
@@ -369,6 +585,12 @@ export default function InteractiveWebGL() {
           if (floorGrid) scene.remove(floorGrid);
           if (oceanParticles) scene.remove(oceanParticles);
           if (lightTarget) scene.remove(lightTarget);
+          if (pillars) {
+            pillars.forEach((p) => scene.remove(p));
+          }
+          if (mountains) {
+            mountains.forEach((m) => scene.remove(m));
+          }
         }
 
         if (glassGeo) glassGeo.dispose();
@@ -377,6 +599,16 @@ export default function InteractiveWebGL() {
         }
         if (textures) {
           textures.forEach((tex) => tex.dispose());
+        }
+        if (pillarGeo) pillarGeo.dispose();
+        if (pillarMat) pillarMat.dispose();
+        if (mountainGeo) mountainGeo.dispose();
+        if (mountainMat) mountainMat.dispose();
+        if (auraGeos) {
+          auraGeos.forEach((geo) => geo.dispose());
+        }
+        if (auraMats) {
+          auraMats.forEach((mat) => mat.dispose());
         }
 
         if (crystal1) {

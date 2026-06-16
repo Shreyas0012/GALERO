@@ -1,7 +1,8 @@
 /* Landing page styling */
 .landing-page {
   min-height: 300vh; /* Allow enough scroll space for 3 sections */
-  width: 100vw;
+  width: 100%;
+  overflow-x: hidden;
   background-color: transparent;
 }
 
@@ -51,7 +52,9 @@
 .hud-frame {
   position: absolute;
   width: 420px;
+  max-width: 90vw;
   height: 280px;
+  max-height: 45vh;
   pointer-events: none;
   z-index: 5;
 }
@@ -102,4 +105,15 @@
   bottom: 0;
   right: 0;
   border-width: 0 1px 1px 0;
+}
+
+/* Responsive adjustments for mobile landing pages */
+@media (max-width: 767px) {
+  .landing-section:first-of-type {
+    padding-top: 140px !important; /* Ensure absolute separation from navbar */
+  }
+}
+
+.landing-title {
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.95), 0 0 8px rgba(0, 0, 0, 0.7);
 }

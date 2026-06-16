@@ -31,6 +31,31 @@
   flex-shrink: 0;
 }
 
+/* ── Brand Logo ───────────────────────────── */
+.navbar-logo {
+  font-family: 'Playfair Display', Didot, 'Bodoni MT', 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.15rem;
+  color: #ffffff;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: opacity 0.3s ease;
+  z-index: 101;
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .navbar-logo {
+    font-size: 1.35rem;
+    letter-spacing: 0.08em;
+  }
+}
+
+.navbar-logo:hover {
+  opacity: 0.8;
+}
+
 /* ── Desktop Nav Links ─── */
 .navbar-links {
   display: none;
