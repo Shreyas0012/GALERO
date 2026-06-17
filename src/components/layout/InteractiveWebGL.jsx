@@ -840,7 +840,7 @@ export default function InteractiveWebGL() {
           centralGroup.rotation.y = elapsedTime * 0.15;
           centralGroup.rotation.x = elapsedTime * 0.08;
           // Levitating cleanly above the wave peaks so it never clips or immerses in the water
-          centralGroup.position.y = waterY + (isMobile ? 22.0 : 28.0); 
+          centralGroup.position.y = waterY + (isMobile ? 38.0 : 45.0); 
         }
 
         // Billboarding and organic pulsing for the central cube's seamless 2D glow
