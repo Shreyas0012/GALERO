@@ -16,7 +16,12 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private final SecretKey key = Keys.hmacShaKeyFor("a-very-long-secret-key-that-must-be-at-least-256-bits".getBytes());
+    @Value("${jwt.secret:a-very-long-secret-key-that-must-be-at-least-256-bits}")
+    private String jwtSecret;
+
+    private SecretKey getKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -33,7 +38,7 @@ public class JwtUtil {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .verifyWith(key)
+                .verifyWith(getKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -56,7 +61,7 @@ public class JwtUtil {
                 .subject(subject)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
-                .signWith(key)
+                .signWith(getKey())
                 .compact();
     }
 
