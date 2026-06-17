@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import InteractiveWebGL from '../components/layout/InteractiveWebGL';
@@ -5,6 +6,41 @@ import DensityMap from '../components/layout/DensityMap';
 import './Landing.css';
 
 export default function Landing() {
+  const mapOverlayRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!mapOverlayRef.current) return;
+      const vh = window.innerHeight;
+      const scrollY = window.scrollY;
+
+      // Map fades IN after section 1 scrolls away and camera is in dark downstream
+      // Fade in:  1.1vh → 1.6vh  (just after section 1 title clears)
+      // Full:     1.6vh → 2.4vh  (fully visible over the dark canyon)
+      // Fade out: 2.4vh → 2.8vh  (before CTA section)
+      const fadeInStart  = vh * 1.1;
+      const fadeInEnd    = vh * 1.6;
+      const fadeOutStart = vh * 2.4;
+      const fadeOutEnd   = vh * 2.8;
+
+      let opacity = 0;
+      if (scrollY >= fadeInStart && scrollY < fadeInEnd) {
+        opacity = (scrollY - fadeInStart) / (fadeInEnd - fadeInStart);
+      } else if (scrollY >= fadeInEnd && scrollY < fadeOutStart) {
+        opacity = 1;
+      } else if (scrollY >= fadeOutStart && scrollY <= fadeOutEnd) {
+        opacity = 1 - (scrollY - fadeOutStart) / (fadeOutEnd - fadeOutStart);
+      }
+
+      mapOverlayRef.current.style.opacity = opacity;
+      mapOverlayRef.current.style.pointerEvents = opacity > 0.05 ? 'auto' : 'none';
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // initialize on mount
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="landing-page relative">
       {/* Fixed Interactive WebGL Galaxy background */}
@@ -13,8 +49,30 @@ export default function Landing() {
       {/* Dynamic Grid Background overlay */}
       <div className="hud-grid" style={{ position: 'fixed', zIndex: 1 }} />
 
+      {/* ── Fixed map HUD overlay ── appears over dark downstream WebGL */}
+      <div
+        ref={mapOverlayRef}
+        className="density-map-overlay"
+        style={{ opacity: 0, pointerEvents: 'none' }}
+      >
+        {/* Header */}
+        <div className="density-map-header">
+          <div className="text-[10px] uppercase tracking-[0.5em] text-white/35 mb-2">
+            Global Reach
+          </div>
+          <h2 className="text-2xl md:text-3xl font-display text-white tracking-wide">
+            Collector Distribution
+          </h2>
+          <p className="text-sm text-white/40 tracking-wider mt-2">
+            Hover over a region to explore density
+          </p>
+        </div>
 
+        {/* Map fills the overlay */}
+        <DensityMap />
+      </div>
 
+      {/* Coordinates HUD */}
       <motion.div
         className="hidden md:block fixed bottom-8 left-8 z-50 mix-blend-difference"
         initial={{ opacity: 0 }}
@@ -28,7 +86,7 @@ export default function Landing() {
       {/* --- Section 1: Main Title Intro --- */}
       <section className="landing-section" style={{ justifyContent: 'flex-end', alignItems: 'flex-start' }}>
 
-        {/* HUD corner brackets — top-right only, subtle */}
+        {/* HUD corner bracket — top-right */}
         <div className="hud-frame" style={{ position: 'absolute', top: '2rem', right: '2rem', left: 'auto', width: 80, height: 80 }}>
           <div className="corner-bl" />
           <div className="corner-br" />
@@ -41,7 +99,6 @@ export default function Landing() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.6, delay: 0.4, ease: 'easeOut' }}
         >
-          {/* Category label */}
           <motion.div
             className="text-[10px] uppercase tracking-[0.55em] text-white/40 mb-5"
             initial={{ opacity: 0 }}
@@ -51,7 +108,6 @@ export default function Landing() {
             Digital Art Archive &nbsp;/&nbsp; Provenance
           </motion.div>
 
-          {/* Thin ruled line */}
           <motion.div
             style={{ width: 48, height: 1, background: 'rgba(255,255,255,0.18)', marginBottom: '1.5rem' }}
             initial={{ scaleX: 0, originX: 0 }}
@@ -59,14 +115,12 @@ export default function Landing() {
             transition={{ duration: 1.2, delay: 1.0 }}
           />
 
-          {/* Main title */}
           <h1 className="landing-title font-display text-white leading-none tracking-tighter"
             style={{ fontSize: 'clamp(2rem, 4.5vw, 4.5rem)' }}>
             DIGITAL<br />
             <span style={{ marginLeft: '0.12em', opacity: 0.88 }}>PROVENANCE</span>
           </h1>
 
-          {/* Scroll hint */}
           <motion.p
             className="mt-7 text-[11px] uppercase tracking-[0.45em] text-white/30"
             initial={{ opacity: 0 }}
@@ -78,49 +132,16 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* --- Section 2 (transparent buffer): mountains descent plays in WebGL --- */}
+      {/* --- Section 2: Scroll space for map overlay (transparent) --- */}
       <section className="landing-section" style={{ pointerEvents: 'none' }} />
 
-      {/* --- Section 3: Interactive Collector Density Map --- */}
-      {/* Outer div always has solid bg — covers WebGL immediately when section enters viewport */}
-      <section className="landing-section" style={{ padding: 0 }}>
-        <div className="density-map-section">
-          {/* Content fades in only after section is FULLY in view (section 1 + buffer both scrolled away) */}
-          <motion.div
-            style={{ position: 'absolute', inset: 0 }}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: false, amount: 0.9 }}
-            transition={{ duration: 1.2 }}
-          >
-            {/* Section header */}
-            <div className="density-map-header">
-              <div className="text-[10px] uppercase tracking-[0.5em] text-white/35 mb-2">
-                Global Reach
-              </div>
-              <h2 className="text-2xl md:text-3xl font-display text-white tracking-wide">
-                Collector Distribution
-              </h2>
-              <p className="text-sm text-white/40 tracking-wider mt-2">
-                Hover over a region to explore density
-              </p>
-            </div>
-
-            {/* Map */}
-            <div style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
-              <DensityMap />
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* --- Section 3: Call to Action (Enter) --- */}
+      {/* --- Section 3: Call to Action --- */}
       <section className="landing-section">
         <motion.div
           className="text-center mix-blend-difference max-w-2xl px-6"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, margin: "-100px" }}
+          viewport={{ once: false, margin: '-100px' }}
           transition={{ duration: 1.2 }}
         >
           <h2 className="text-4xl md:text-5xl font-display text-white mb-6 tracking-wide">
@@ -135,7 +156,7 @@ export default function Landing() {
               <div className="text-sm uppercase tracking-[0.3em] text-white/70 group-hover:text-white transition-colors duration-700 font-semibold">
                 Explore Paintings
               </div>
-              <div className="w-8 h-[1px] bg-white/30 group-hover:w-16 group-hover:bg-white transition-all duration-700"></div>
+              <div className="w-8 h-[1px] bg-white/30 group-hover:w-16 group-hover:bg-white transition-all duration-700" />
             </Link>
           </div>
         </motion.div>
