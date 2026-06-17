@@ -25,35 +25,56 @@ export default function Landing() {
       </motion.div>
 
       {/* --- Section 1: Main Title Intro --- */}
-      <section className="landing-section !justify-start pt-36">
-        <div className="relative flex items-center justify-center pointer-events-auto">
-          {/* Corner brackets */}
-          <div className="hud-frame flex items-center justify-center">
-            <div className="corner-bl" />
-            <div className="corner-br" />
-          </div>
+      <section className="landing-section" style={{ justifyContent: 'flex-end', alignItems: 'flex-start' }}>
 
-          <motion.div
-            className="text-center mix-blend-difference pointer-events-none select-none z-10"
-            initial={{ opacity: 0, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, filter: 'blur(0px)' }}
-            transition={{ duration: 3, delay: 0.3, ease: 'easeOut' }}
-          >
-            <h1 className="text-[11vw] sm:text-6xl md:text-[8vw] leading-none font-display text-white tracking-tighter mix-blend-overlay opacity-90 landing-title">
-              FROZEN
-              <br />
-              PROVENANCE
-            </h1>
-            <motion.p
-              className="mt-8 text-sm uppercase tracking-[0.5em] text-white/40"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 2, delay: 1 }}
-            >
-              Scroll down to explore the immersive digital art archive.
-            </motion.p>
-          </motion.div>
+        {/* HUD corner brackets — top-right only, subtle */}
+        <div className="hud-frame" style={{ position: 'absolute', top: '2rem', right: '2rem', left: 'auto', width: 80, height: 80 }}>
+          <div className="corner-bl" />
+          <div className="corner-br" />
         </div>
+
+        <motion.div
+          className="pointer-events-none select-none z-10"
+          style={{ paddingBottom: '5rem', paddingLeft: '2.5rem' }}
+          initial={{ opacity: 0, y: 32 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.6, delay: 0.4, ease: 'easeOut' }}
+        >
+          {/* Category label */}
+          <motion.div
+            className="text-[10px] uppercase tracking-[0.55em] text-white/40 mb-5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.5, delay: 0.8 }}
+          >
+            Digital Art Archive &nbsp;/&nbsp; Provenance
+          </motion.div>
+
+          {/* Thin ruled line */}
+          <motion.div
+            style={{ width: 48, height: 1, background: 'rgba(255,255,255,0.18)', marginBottom: '1.5rem' }}
+            initial={{ scaleX: 0, originX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 1.2, delay: 1.0 }}
+          />
+
+          {/* Main title */}
+          <h1 className="landing-title font-display text-white leading-none tracking-tighter"
+            style={{ fontSize: 'clamp(3.5rem, 8vw, 7.5rem)' }}>
+            FROZEN<br />
+            <span style={{ marginLeft: '0.12em', opacity: 0.88 }}>PROVENANCE</span>
+          </h1>
+
+          {/* Scroll hint */}
+          <motion.p
+            className="mt-7 text-[11px] uppercase tracking-[0.45em] text-white/30"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 2, delay: 1.3 }}
+          >
+            Scroll to explore the collection
+          </motion.p>
+        </motion.div>
       </section>
 
       {/* --- Section 2: Immersive Info --- */}
