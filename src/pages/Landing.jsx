@@ -60,7 +60,7 @@ export default function Landing() {
 
           {/* Main title */}
           <h1 className="landing-title font-display text-white leading-none tracking-tighter"
-            style={{ fontSize: 'clamp(3.5rem, 8vw, 7.5rem)' }}>
+            style={{ fontSize: 'clamp(2rem, 4.5vw, 4.5rem)' }}>
             FROZEN<br />
             <span style={{ marginLeft: '0.12em', opacity: 0.88 }}>PROVENANCE</span>
           </h1>
