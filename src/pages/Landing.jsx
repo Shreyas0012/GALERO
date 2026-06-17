@@ -78,33 +78,40 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* --- Section 2: Interactive Collector Density Map --- */}
-      <section className="landing-section" style={{ padding: 0 }}>
-        <motion.div
-          className="density-map-section"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: false, margin: '-80px' }}
-          transition={{ duration: 1.4 }}
-        >
-          {/* Section header */}
-          <div className="density-map-header">
-            <div className="text-[10px] uppercase tracking-[0.5em] text-white/35 mb-2">
-              Global Reach
-            </div>
-            <h2 className="text-2xl md:text-3xl font-display text-white tracking-wide">
-              Collector Distribution
-            </h2>
-            <p className="text-sm text-white/40 tracking-wider mt-2">
-              Hover over a region to explore density
-            </p>
-          </div>
+      {/* --- Section 2 (transparent buffer): mountains descent plays in WebGL --- */}
+      <section className="landing-section" style={{ pointerEvents: 'none' }} />
 
-          {/* Map */}
-          <div style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
-            <DensityMap />
-          </div>
-        </motion.div>
+      {/* --- Section 3: Interactive Collector Density Map --- */}
+      {/* Outer div always has solid bg — covers WebGL immediately when section enters viewport */}
+      <section className="landing-section" style={{ padding: 0 }}>
+        <div className="density-map-section">
+          {/* Content fades in only after section is FULLY in view (section 1 + buffer both scrolled away) */}
+          <motion.div
+            style={{ position: 'absolute', inset: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: false, amount: 0.9 }}
+            transition={{ duration: 1.2 }}
+          >
+            {/* Section header */}
+            <div className="density-map-header">
+              <div className="text-[10px] uppercase tracking-[0.5em] text-white/35 mb-2">
+                Global Reach
+              </div>
+              <h2 className="text-2xl md:text-3xl font-display text-white tracking-wide">
+                Collector Distribution
+              </h2>
+              <p className="text-sm text-white/40 tracking-wider mt-2">
+                Hover over a region to explore density
+              </p>
+            </div>
+
+            {/* Map */}
+            <div style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
+              <DensityMap />
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* --- Section 3: Call to Action (Enter) --- */}

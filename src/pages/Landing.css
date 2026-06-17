@@ -1,6 +1,6 @@
 /* Landing page styling */
 .landing-page {
-  min-height: 300vh; /* Allow enough scroll space for 3 sections */
+  min-height: 400vh; /* 4 sections: title + buffer + map + CTA */
   width: 100%;
   overflow-x: hidden;
   background-color: transparent;
