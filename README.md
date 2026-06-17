@@ -134,7 +134,7 @@ npm run dev
 Runs on:
 
 ```text
-http://localhost:5173
+[http://localhost:5173](https://artora-mu.vercel.app/)
 ```
 
 ---
