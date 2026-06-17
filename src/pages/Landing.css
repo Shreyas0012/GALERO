@@ -118,3 +118,27 @@
 .landing-title {
   text-shadow: 0 4px 24px rgba(0, 0, 0, 0.95), 0 0 8px rgba(0, 0, 0, 0.7);
 }
+
+/* ── Density Map Section ──────────────────────────────────── */
+.density-map-section {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: #020617;
+}
+
+.density-map-header {
+  position: absolute;
+  top: 2.5rem;
+  left: 3rem;
+  z-index: 15;
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .density-map-header {
+    top: 1.5rem;
+    left: 1.5rem;
+  }
+}

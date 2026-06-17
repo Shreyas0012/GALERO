@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import InteractiveWebGL from '../components/layout/InteractiveWebGL';
+import DensityMap from '../components/layout/DensityMap';
 import './Landing.css';
 
 export default function Landing() {
@@ -61,7 +62,7 @@ export default function Landing() {
           {/* Main title */}
           <h1 className="landing-title font-display text-white leading-none tracking-tighter"
             style={{ fontSize: 'clamp(2rem, 4.5vw, 4.5rem)' }}>
-            FROZEN<br />
+            DIGITAL<br />
             <span style={{ marginLeft: '0.12em', opacity: 0.88 }}>PROVENANCE</span>
           </h1>
 
@@ -77,21 +78,32 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* --- Section 2: Immersive Info --- */}
-      <section className="landing-section">
+      {/* --- Section 2: Interactive Collector Density Map --- */}
+      <section className="landing-section" style={{ padding: 0 }}>
         <motion.div
-          className="text-center mix-blend-difference max-w-2xl px-6"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, margin: "-100px" }}
-          transition={{ duration: 1.2 }}
+          className="density-map-section"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: false, margin: '-80px' }}
+          transition={{ duration: 1.4 }}
         >
-          <h2 className="text-4xl md:text-5xl font-display text-white mb-6 tracking-wide">
-            Digital Art Archive
-          </h2>
-          <p className="text-lg text-white/60 tracking-wider leading-relaxed">
-            Traverse floating 3D canvas installations locked dynamically inside the immutable digital matrix.
-          </p>
+          {/* Section header */}
+          <div className="density-map-header">
+            <div className="text-[10px] uppercase tracking-[0.5em] text-white/35 mb-2">
+              Global Reach
+            </div>
+            <h2 className="text-2xl md:text-3xl font-display text-white tracking-wide">
+              Collector Distribution
+            </h2>
+            <p className="text-sm text-white/40 tracking-wider mt-2">
+              Hover over a region to explore density
+            </p>
+          </div>
+
+          {/* Map */}
+          <div style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
+            <DensityMap />
+          </div>
         </motion.div>
       </section>
 
