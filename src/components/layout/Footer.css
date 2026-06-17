@@ -34,7 +34,7 @@
 }
 
 .footer-tagline {
-  color: var(--text-secondary);
+  color: #94a3b8;
   font-size: 0.875rem;
 }
 
@@ -68,12 +68,12 @@
 
 .footer-col a {
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: #94a3b8;
   transition: color var(--transition-fast);
 }
 
 .footer-col a:hover {
-  color: var(--text-primary);
+  color: #f1f5f9;
 }
 
 .footer-bottom {
@@ -84,7 +84,7 @@
   padding-top: var(--space-4);
   border-top: 1px solid var(--border-color);
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: #64748b;
 }
 
 @media (min-width: 768px) {

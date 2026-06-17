@@ -9,7 +9,7 @@ export default function Footer() {
           <Link to="/" className="font-display text-4xl tracking-widest uppercase mb-4 inline-block text-white">
             Galero
           </Link>
-          <p className="footer-tagline text-muted max-w-md mx-auto">
+          <p className="footer-tagline max-w-md mx-auto">
             A curated marketplace for provenance-backed digital and physical art.
           </p>
         </div>
