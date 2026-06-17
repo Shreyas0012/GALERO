@@ -1,4 +1,4 @@
-# ARTORA
+## GALERO
 
 > A full-stack digital artwork marketplace built using **React, Spring Boot, and PostgreSQL**, designed to help artists showcase, manage, and explore digital artworks through a modern and scalable web application.
 
@@ -110,6 +110,14 @@ ARTORA
 ---
 
 ## Local Setup
+
+### Database
+
+Deployed at:
+
+```text
+https://vfewoocjynrbgyrhlqwo.supabase.co
+```
 
 ### Backend
 
