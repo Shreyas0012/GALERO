@@ -743,14 +743,15 @@ export default function InteractiveWebGL() {
 
         if (progress < 0.5) {
           // Phase 1: Intro phase (0% to 50% scroll) - stable centered camera, subtle forward Z drift
-          cameraZ = (progress / 0.5) * -180.0; // Subtle Z drift
+          // Stop at Z = -155 so the camera never enters the cube (cube front face ≈ Z -172.5)
+          cameraZ = (progress / 0.5) * -155.0;
           cameraY = Math.sin(elapsedTime * 0.35) * 0.4; // Organic floating drift
         } else {
           // Phase 2: Descent phase (50% to 100% scroll) - fall down the waterfall
           dropProgress = (progress - 0.5) / 0.5;
           const dropEase = Math.pow(dropProgress, 2.5); // Ease-in plunge
 
-          cameraZ = -180.0 - (dropEase * 620.0); // Smooth Z translation forward
+          cameraZ = -155.0 - (dropEase * 645.0); // Smooth Z translation forward (reaches ~-800 at full scroll)
           
           // Calculate camera Y height dynamically based on the water physical bend curve at cameraZ
           let waterfallBendAtCamera = 0.0;
