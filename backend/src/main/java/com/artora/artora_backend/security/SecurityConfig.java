@@ -35,7 +35,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/upload", "/uploads/**").permitAll()
+                .requestMatchers("/", "/api/auth/**", "/api/upload", "/uploads/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/artworks/**", "/api/artists/**", "/api/collections/**").permitAll()
                 // Require specific roles for mutating endpoints
                 .requestMatchers(HttpMethod.POST, "/api/artworks/**", "/api/artists/**").hasAnyRole("ADMIN", "ARTIST")

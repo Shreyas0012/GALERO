@@ -1,6 +1,6 @@
 /* Landing page styling */
 .landing-page {
-  min-height: 300vh; /* 3 sections: title + map scroll space + CTA */
+  min-height: 400vh; /* 4 sections: title + downstream scroll space + map scroll space + CTA */
   width: 100%;
   overflow-x: hidden;
   background-color: transparent;
@@ -133,7 +133,7 @@
 
 .density-map-header {
   position: absolute;
-  top: 2.5rem;
+  top: 7.5rem;
   left: 3rem;
   z-index: 15;
   pointer-events: none;
@@ -141,7 +141,7 @@
 
 @media (max-width: 767px) {
   .density-map-header {
-    top: 1.5rem;
+    top: 5.5rem;
     left: 1.5rem;
   }
 }

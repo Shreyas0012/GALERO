@@ -28,6 +28,7 @@ public class Artwork {
     private Integer year;
     private String imageUrl;
     private Boolean isAvailable = true;
+    private String orientation = "portrait";
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "artist_id")

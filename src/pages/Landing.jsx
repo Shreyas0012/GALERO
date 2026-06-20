@@ -14,14 +14,14 @@ export default function Landing() {
       const vh = window.innerHeight;
       const scrollY = window.scrollY;
 
-      // Map fades IN after section 1 scrolls away and camera is in dark downstream
-      // Fade in:  1.1vh → 1.6vh  (just after section 1 title clears)
-      // Full:     1.6vh → 2.4vh  (fully visible over the dark canyon)
-      // Fade out: 2.4vh → 2.8vh  (before CTA section)
-      const fadeInStart  = vh * 1.1;
-      const fadeInEnd    = vh * 1.6;
-      const fadeOutStart = vh * 2.4;
-      const fadeOutEnd   = vh * 2.8;
+      // Map fades IN after the end of downstream (which completes at 2.0vh scroll)
+      // Fade in:  2.0vh → 2.2vh
+      // Full:     2.2vh → 2.6vh
+      // Fade out: 2.6vh → 2.9vh
+      const fadeInStart  = vh * 2.0;
+      const fadeInEnd    = vh * 2.2;
+      const fadeOutStart = vh * 2.6;
+      const fadeOutEnd   = vh * 2.9;
 
       let opacity = 0;
       if (scrollY >= fadeInStart && scrollY < fadeInEnd) {
@@ -132,10 +132,13 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* --- Section 2: Scroll space for map overlay (transparent) --- */}
+      {/* --- Section 2: Scroll space for downstream descent (transparent) --- */}
       <section className="landing-section" style={{ pointerEvents: 'none' }} />
 
-      {/* --- Section 3: Call to Action --- */}
+      {/* --- Section 3: Scroll space for map overlay (transparent) --- */}
+      <section className="landing-section" style={{ pointerEvents: 'none' }} />
+
+      {/* --- Section 4: Call to Action --- */}
       <section className="landing-section">
         <motion.div
           className="text-center mix-blend-difference max-w-2xl px-6"

@@ -700,9 +700,9 @@ export default function InteractiveWebGL() {
       const maxGalaxyDepth = -800; 
 
       const handleScroll = () => {
-        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-        targetScrollPercent = window.scrollY / (maxScroll || 1);
-        targetScrollZ = targetScrollPercent * maxGalaxyDepth;
+        const vh = window.innerHeight;
+        const animationEndScroll = vh * 2.0;
+        targetScrollPercent = Math.min(1.0, Math.max(0, window.scrollY / (animationEndScroll || 1)));
       };
       window.addEventListener('scroll', handleScroll);
 
@@ -725,12 +725,13 @@ export default function InteractiveWebGL() {
         const elapsedTime = clock.getElapsedTime();
 
         // Direct scroll query inside render loop bypasses mobile touch event lag/throttling
-        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const vh = window.innerHeight;
         const scrollY = window.scrollY || window.pageYOffset || 0;
-        targetScrollPercent = scrollY / (maxScroll || 1);
+        const animationEndScroll = vh * 2.0;
+        const animScrollPercent = Math.min(1.0, Math.max(0, scrollY / (animationEndScroll || 1)));
 
         // Linear Interpolation (Lerp) for smooth scroll percentages
-        currentScrollPercent += (targetScrollPercent - currentScrollPercent) * 0.05;
+        currentScrollPercent += (animScrollPercent - currentScrollPercent) * 0.05;
 
         // Two-phase camera control based on remapped scroll progress:
         const progress = currentScrollPercent;

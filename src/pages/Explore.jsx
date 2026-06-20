@@ -41,8 +41,6 @@ export default function Explore() {
   const [activeMode, setActiveMode] = useState('portrait');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const [orientations, setOrientations] = useState({});
-
   // ── Real API data ──
   const { data: rawArtworks, loading, error } = useFetch(artworksApi.getAll);
 
@@ -51,26 +49,7 @@ export default function Explore() {
     [rawArtworks]
   );
 
-  // Pre-load images to determine orientation
-  useEffect(() => {
-    if (!artworks.length) return;
-    
-    artworks.forEach(art => {
-      const img = new Image();
-      img.onload = () => {
-        setOrientations(prev => ({
-          ...prev,
-          [art.id]: img.width > img.height ? 'landscape' : 'portrait'
-        }));
-      };
-      img.src = art.images[0];
-    });
-  }, [artworks]);
-
-  const filteredArtworks = artworks.map(art => ({
-    ...art,
-    orientation: orientations[art.id] || 'portrait' // fallback until loaded
-  })).filter(artwork => {
+  const filteredArtworks = artworks.filter(artwork => {
     const matchesSearch = artwork.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesMode = artwork.orientation === activeMode;
     return matchesSearch && matchesMode;
@@ -78,15 +57,15 @@ export default function Explore() {
 
   // Auto-switch mode if current mode is empty but the other mode has items
   useEffect(() => {
-    const hasPortrait = artworks.some(art => (orientations[art.id] || 'portrait') === 'portrait');
-    const hasLandscape = artworks.some(art => orientations[art.id] === 'landscape');
+    const hasPortrait = artworks.some(art => art.orientation === 'portrait');
+    const hasLandscape = artworks.some(art => art.orientation === 'landscape');
     
     if (activeMode === 'portrait' && !hasPortrait && hasLandscape) {
       setActiveMode('landscape');
     } else if (activeMode === 'landscape' && !hasLandscape && hasPortrait) {
       setActiveMode('portrait');
     }
-  }, [orientations, activeMode, artworks]);
+  }, [activeMode, artworks]);
 
   const isPortrait = activeMode === 'portrait';
 
